@@ -1,0 +1,107 @@
+---
+title: "Antdv Next: Vue 3 Ant Design Component Library"
+description: "Antdv Next is a Vue 3 port of Ant Design providing 70+ typed components, CSS-in-JS theming via @antdv-next/cssinjs, and locale files for 70+ languages."
+---
+
+Antdv Next is a Vue 3 UI component library built on the [Ant Design](https://ant.design/) specification. It is a faithful port of Ant Design's React component suite, adapted for idiomatic Vue 3 Composition API with TSX. The library ships as a pure ESM package with complete TypeScript definitions, a CSS-in-JS theming engine powered by `@antdv-next/cssinjs`, and over 70 built-in locale files — making it suitable for building production-grade, enterprise web applications.
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="TypeScript support" icon="code">
+    Every component defines explicit `Props`, `Emits`, and `SlotsType`. Autocomplete and static type checking work without additional configuration.
+  </Card>
+  <Card title="CSS-in-JS theming" icon="brush">
+    Design tokens at every level — global seed tokens, map tokens, and per-component alias tokens — all powered by `@antdv-next/cssinjs`.
+  </Card>
+  <Card title="Internationalization" icon="globe">
+    Over 70 locale files are included. Switch language at runtime by passing a locale to `<a-config-provider>`.
+  </Card>
+  <Card title="SSR support" icon="server">
+    Works in server-side rendering environments. Use `<a-style-provider>` to collect and inject critical CSS during SSR.
+  </Card>
+  <Card title="Tree shaking" icon="leaf">
+    Pure ESM package. Named imports such as `import { Button } from 'antdv-next'` drop unused code automatically. Works with `unplugin-vue-components` for zero-config auto-import.
+  </Card>
+  <Card title="Ant Design API parity" icon="layer-group">
+    Component APIs mirror Ant Design's React components. Existing Ant Design knowledge transfers directly, with Vue-idiomatic adaptations for slots, emits, and `v-model`.
+  </Card>
+</CardGroup>
+
+## Environment support
+
+Antdv Next targets modern browsers and does not support Internet Explorer. The minimum recommended Vue version is `3.5.x`.
+
+| Browser | Supported versions |
+| --- | --- |
+| Edge | Last 2 versions |
+| Firefox | Last 2 versions |
+| Chrome | Last 2 versions |
+| Safari | Last 2 versions |
+| Electron | Last 2 versions |
+
+## Installation
+
+Install `antdv-next` using your preferred package manager.
+
+<CodeGroup>
+
+```bash npm
+npm install antdv-next --save
+```
+
+```bash yarn
+yarn add antdv-next
+```
+
+```bash pnpm
+pnpm install antdv-next --save
+```
+
+```bash bun
+bun add antdv-next
+```
+
+</CodeGroup>
+
+## Basic usage
+
+Register the library as a Vue plugin and import the reset stylesheet. After that, all `a-*` components are available globally in your templates.
+
+```typescript main.ts
+import { createApp } from 'vue'
+import AntdvNext from 'antdv-next'
+import 'antdv-next/dist/reset.css'
+import App from './App.vue'
+
+const app = createApp(App)
+app.use(AntdvNext)
+app.mount('#app')
+```
+
+Once registered, use any component in your templates without additional imports:
+
+```vue App.vue
+<template>
+  <a-date-picker v-model:value="value" need-confirm />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const value = ref()
+</script>
+```
+
+## Version and links
+
+The current stable release is published to npm as [`antdv-next`](https://www.npmjs.org/package/antdv-next). The source repository is at [github.com/antdv-next/antdv-next](https://github.com/antdv-next/antdv-next).
+
+<CardGroup cols={2}>
+  <Card title="Get started" icon="rocket" href="/getting-started">
+    Step-by-step guide to install and render your first component.
+  </Card>
+  <Card title="Nuxt integration" icon="server" href="/nuxt-integration">
+    Set up antdv-next in a Nuxt 3 application with SSR support.
+  </Card>
+</CardGroup>

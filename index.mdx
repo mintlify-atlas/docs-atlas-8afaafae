@@ -1,133 +1,87 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
-icon: 'star'
+title: "Antdv Next: Enterprise Vue 3 Component Library"
+description: "Antdv Next is a Vue 3 enterprise component library with 70+ typed components, CSS-in-JS theming, and i18n for 70+ languages — built on the Ant Design system."
 ---
 
-## Setting up
+Antdv Next is a Vue 3 enterprise UI component library that brings the full power of [Ant Design](https://ant.design/) to the Vue ecosystem. It ships with 70+ battle-tested components, complete TypeScript definitions, powerful CSS-in-JS theming, and internationalization support for over 70 languages — everything you need to build production-grade web applications.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/getting-started">
+    Install antdv-next and render your first component in minutes
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Components" icon="grid-2" href="/components/button">
+    Browse 70+ Vue 3 components with full prop and slot documentation
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Customize Theme" icon="palette" href="/theming/customize-theme">
+    Use design tokens and CSS-in-JS to match your brand exactly
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Internationalization" icon="globe" href="/guides/i18n">
+    Switch locales at runtime with ConfigProvider and 70+ built-in translations
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Why Antdv Next?
 
-Everything you need to create world-class documentation.
+Antdv Next is a faithful Vue 3 port of Ant Design, adapted for idiomatic Vue 3 Composition API with TSX. Every component ships with typed `Props`, `Emits`, and `SlotsType`, making autocomplete and type checking work out of the box.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={2}>
+  <Card title="TypeScript First" icon="code">
+    Every component defines explicit `Props`, `Emits`, and `SlotsType` — no guessing required.
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="CSS-in-JS Theming" icon="brush">
+    Design tokens at every level: global seed tokens, map tokens, and per-component tokens.
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="Tree Shakeable" icon="leaf">
+    Pure ESM package — only import what you use. Works with `unplugin-vue-components` for zero-config auto-import.
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="SSR and Nuxt Ready" icon="server">
+    Works in server-side rendering environments and has first-class Nuxt.js support.
   </Card>
-</Columns>
+</CardGroup>
 
-## Make your content agent ready
+## Quick install
 
-Make your docs work for humans and AI agents alike.
+<CodeGroup>
+```bash npm
+npm install antdv-next
+```
+```bash yarn
+yarn add antdv-next
+```
+```bash pnpm
+pnpm add antdv-next
+```
+```bash bun
+bun add antdv-next
+```
+</CodeGroup>
 
-<Columns cols={2}>
-  <Card
-    title="Prompt component"
-    icon="robot"
-    href="/agent-ready/prompt"
-  >
-    Embed shareable AI prompts readers can copy or open in Cursor.
-  </Card>
-  <Card
-    title="Visibility"
-    icon="eye"
-    href="/agent-ready/visibility"
-  >
-    Show different content to humans and agents reading your docs.
-  </Card>
-  <Card
-    title="Contextual menu"
-    icon="bolt"
-    href="/agent-ready/contextual"
-  >
-    Give readers one-click access to Claude, ChatGPT, Cursor, and more.
-  </Card>
-  <Card
-    title="AI coding tools"
-    icon="wand-magic-sparkles"
-    href="/ai-tools/claude-code"
-  >
-    Set up Claude Code, Cursor, or Windsurf with Mintlify's skill.
-  </Card>
-</Columns>
+## Register globally
 
-## Need inspiration?
+```typescript main.ts
+import { createApp } from 'vue'
+import AntdvNext from 'antdv-next'
+import 'antdv-next/dist/reset.css'
+import App from './App.vue'
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+const app = createApp(App)
+app.use(AntdvNext)
+app.mount('#app')
+```
+
+## Start exploring
+
+<Steps>
+  <Step title="Install the package">
+    Add `antdv-next` to your project using npm, yarn, pnpm, or bun.
+  </Step>
+  <Step title="Register components">
+    Use the plugin globally with `app.use(AntdvNext)`, or import individual components for tree shaking.
+  </Step>
+  <Step title="Configure your theme">
+    Wrap your app with `<a-config-provider>` to set design tokens, locale, and component defaults.
+  </Step>
+  <Step title="Build your UI">
+    Choose from 70+ components across General, Layout, Navigation, Data Entry, Data Display, and Feedback categories.
+  </Step>
+</Steps>

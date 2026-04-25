@@ -1,0 +1,116 @@
+---
+title: "Anchor — in-page navigation links"
+description: "The antdv-next Anchor component creates a floating list of links that highlights the active section as the user scrolls, with customizable offset and container."
+---
+
+The `Anchor` component renders a list of hyperlinks that track the visible section of a long page and highlight the corresponding link as the user scrolls. It is commonly placed in the right-hand column of documentation or content pages. By default the anchor list is wrapped in an `Affix` so it stays fixed as the page scrolls, though this can be disabled. Nested links are supported for multi-level section trees.
+
+## Props
+
+<ParamField path="items" type="AnchorLinkItemProps[]">
+  Array of link definitions rendered as the anchor list. Each item requires a `key`, `href`, and `title`. Children can be nested for multi-level navigation.
+</ParamField>
+
+<ParamField path="affix" type="boolean | AffixProps" default="true">
+  Wrap the anchor in an `Affix` to keep it fixed while scrolling. Pass an object to forward props to the `Affix` component (excluding `offsetTop` and `target`).
+</ParamField>
+
+<ParamField path="offsetTop" type="number" default="0">
+  Pixel distance from the top of the viewport when `affix` is enabled.
+</ParamField>
+
+<ParamField path="targetOffset" type="number">
+  Scroll offset used when computing which section is active. Defaults to `offsetTop` when not set.
+</ParamField>
+
+<ParamField path="bounds" type="number" default="5">
+  Threshold in pixels for detecting whether a section is within view.
+</ParamField>
+
+<ParamField path="direction" type="'vertical' | 'horizontal'" default="'vertical'">
+  Orientation of the anchor list. `horizontal` renders links in a row and is useful for a page-level header.
+</ParamField>
+
+<ParamField path="getCurrentAnchor" type="(activeLink: string) => string">
+  Custom function to override which link is highlighted. Receives the internally computed active link and should return the key of the link to highlight.
+</ParamField>
+
+<ParamField path="getContainer" type="() => HTMLElement | Window">
+  Return the scroll container to observe. Defaults to `window`.
+</ParamField>
+
+<ParamField path="showInkInFixed" type="boolean" default="false">
+  Show the ink indicator even when the anchor is not affixed.
+</ParamField>
+
+<ParamField path="replace" type="boolean" default="false">
+  Use `history.replaceState` instead of `pushState` when clicking an anchor link.
+</ParamField>
+
+## AnchorLinkItemProps shape
+
+| Field | Type | Description |
+|---|---|---|
+| `key` | `Key` | Unique identifier for the link item. |
+| `href` | `string` | Target anchor URL, e.g. `#introduction`. |
+| `title` | `VueNode` | Link text displayed in the list. |
+| `target` | `string` | HTML anchor `target` attribute. |
+| `children` | `AnchorLinkItemProps[]` | Nested sub-links (vertical direction only). |
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `change` | `(currentActiveLink: string)` | Fired when the active link changes due to scrolling or a `getCurrentAnchor` result change. |
+| `click` | `(event: MouseEvent, link: { title: VNodeChild, href: string })` | Fired when the user clicks an anchor link. |
+
+## Example
+
+```vue
+<script setup lang="ts">
+import { AAnchor } from 'antdv-next'
+import type { AnchorLinkItemProps } from 'antdv-next'
+
+const items: AnchorLinkItemProps[] = [
+  {
+    key: 'intro',
+    href: '#introduction',
+    title: 'Introduction',
+  },
+  {
+    key: 'install',
+    href: '#installation',
+    title: 'Installation',
+    children: [
+      { key: 'npm', href: '#npm', title: 'npm' },
+      { key: 'yarn', href: '#yarn', title: 'yarn' },
+    ],
+  },
+  {
+    key: 'usage',
+    href: '#usage',
+    title: 'Usage',
+  },
+]
+
+function handleChange(link: string) {
+  console.log('Active anchor:', link)
+}
+</script>
+
+<template>
+  <AAnchor
+    :items="items"
+    :offset-top="64"
+    @change="handleChange"
+  />
+</template>
+```
+
+<Note>
+  In `horizontal` direction, nested `children` are not rendered. Use `vertical` (the default) when you need a multi-level section tree.
+</Note>
+
+<Tip>
+  Use `getContainer` when the scrollable area is not `window`, such as a modal or a custom scrollable `div`. Return the container element from the function to have the Anchor observe the correct scroll events.
+</Tip>

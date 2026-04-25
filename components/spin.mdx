@@ -1,0 +1,58 @@
+---
+title: "Spin — loading indicator"
+description: "antdv-next Spin renders an animated spinner for loading states. Wrap content with Spin to overlay a loading mask, or use it standalone as a progress indicator."
+---
+
+`Spin` displays an animated loading indicator. Use it standalone as an in-page spinner, or wrap any content block to overlay a loading mask while data is being fetched.
+
+## Standalone spinner
+
+```vue
+<a-spin />
+<a-spin size="large" />
+```
+
+## Wrapping content
+
+```vue
+<a-spin :spinning="loading" tip="Loading data...">
+  <div class="content">
+    <!-- content displayed under the overlay -->
+    <p>Your data will appear here.</p>
+  </div>
+</a-spin>
+```
+
+## Delay to avoid flicker
+
+```vue
+<a-spin :spinning="loading" :delay="500">
+  <slot />
+</a-spin>
+```
+
+## Props
+
+<ParamField path="spinning" type="boolean">
+  Whether the spinner is visible. Defaults to `true`.
+</ParamField>
+
+<ParamField path="size" type="'small' | 'default' | 'large'">
+  Spinner size.
+</ParamField>
+
+<ParamField path="tip" type="string | VueNode">
+  Loading text shown below the spinner when wrapping content.
+</ParamField>
+
+<ParamField path="delay" type="number">
+  Milliseconds to wait before showing the spinner. Prevents flicker on fast loads.
+</ParamField>
+
+<ParamField path="indicator" type="VueNode">
+  Custom spinner element replacing the default animated icon.
+</ParamField>
+
+<ParamField path="wrapperClassName" type="string">
+  CSS class applied to the wrapper element (when wrapping content).
+</ParamField>

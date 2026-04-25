@@ -1,0 +1,77 @@
+---
+title: "Skeleton — content placeholder"
+description: "antdv-next Skeleton renders animated gray placeholder shapes while real content loads. Specialized variants cover avatar, button, image, input, and text blocks."
+---
+
+`Skeleton` renders animated placeholder UI that matches the shape of the content it replaces. This prevents layout shift and reduces perceived load time. Specialized sub-components (`SkeletonAvatar`, `SkeletonButton`, `SkeletonImage`, `SkeletonInput`) can be composed into any layout.
+
+## Basic skeleton
+
+```vue
+<a-skeleton :loading="loading" active>
+  <template #default>
+    <p>Real content shown when loading is false.</p>
+  </template>
+</a-skeleton>
+```
+
+## Avatar with text
+
+```vue
+<a-skeleton avatar :paragraph="{ rows: 3 }" active :loading="loading">
+  <user-card />
+</a-skeleton>
+```
+
+## Standalone shapes
+
+```vue
+<a-skeleton-avatar active />
+<a-skeleton-button active style="width: 120px" />
+<a-skeleton-input active style="width: 200px" />
+<a-skeleton-image active />
+```
+
+## Skeleton Props
+
+<ParamField path="loading" type="boolean">
+  When `true`, renders the skeleton. When `false`, renders slot content.
+</ParamField>
+
+<ParamField path="active" type="boolean">
+  Enables the shimmer animation.
+</ParamField>
+
+<ParamField path="avatar" type="boolean | SkeletonAvatarProps">
+  Shows an avatar placeholder on the left.
+</ParamField>
+
+<ParamField path="title" type="boolean | { width }">
+  Shows a title placeholder. Defaults to `true`.
+</ParamField>
+
+<ParamField path="paragraph" type="boolean | { rows, width }">
+  Shows paragraph line placeholders. Defaults to `true` with `rows: 3`.
+</ParamField>
+
+<ParamField path="round" type="boolean">
+  Rounds the title and paragraph placeholders.
+</ParamField>
+
+## SkeletonButton Props
+
+<ParamField path="active" type="boolean">
+  Enables shimmer.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'default' | 'small'">
+  Button skeleton size.
+</ParamField>
+
+<ParamField path="shape" type="'default' | 'circle' | 'round' | 'square'">
+  Skeleton shape.
+</ParamField>
+
+<ParamField path="block" type="boolean">
+  Makes the skeleton full width.
+</ParamField>

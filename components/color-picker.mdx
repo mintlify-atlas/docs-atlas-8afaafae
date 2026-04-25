@@ -1,0 +1,88 @@
+---
+title: "ColorPicker — visual color selection"
+description: "antdv-next ColorPicker provides HSB, RGB, and HEX selection with alpha, preset swatches, and a Color type with toHexString() and toRgbString() helpers."
+---
+
+`ColorPicker` renders a color swatch trigger that opens a panel with hue/saturation/brightness sliders, a hex/rgb/hsb input, and an optional alpha channel. Bind the selected color with `v-model:value`, which accepts and emits a `Color` object with conversion helpers like `toHexString()` and `toRgbString()`.
+
+## Basic usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { Color } from 'antdv-next'
+const color = ref<Color>()
+</script>
+
+<template>
+  <a-color-picker v-model:value="color" />
+  <span>Hex: {{ color?.toHexString() }}</span>
+</template>
+```
+
+## Inline panel
+
+```vue
+<a-color-picker v-model:value="color" :open="true" />
+```
+
+## With presets
+
+```vue
+<a-color-picker
+  v-model:value="color"
+  :presets="[{ label: 'Brand', colors: ['#249bf9', '#f64754', '#66b5f9'] }]"
+/>
+```
+
+## Props
+
+<ParamField path="value" type="Color | string">
+  Bound color via `v-model:value`. Accepts a `Color` object or a hex/rgb/hsb string.
+</ParamField>
+
+<ParamField path="format" type="'hex' | 'rgb' | 'hsb'">
+  Format shown in the text input. Defaults to `'hex'`.
+</ParamField>
+
+<ParamField path="allowClear" type="boolean">
+  Shows a clear button to reset to no color.
+</ParamField>
+
+<ParamField path="showText" type="boolean | ((color: Color) => string)">
+  Shows the color value as text next to the swatch.
+</ParamField>
+
+<ParamField path="presets" type="{ label: string, colors: string[] }[]">
+  Preset color swatches shown in the panel.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  Controls the panel visibility. Pass `true` for an inline always-open panel.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the color picker.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'middle' | 'small'">
+  Size of the trigger swatch.
+</ParamField>
+
+## Color type
+
+The `Color` object returned by the picker exposes:
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `toHexString()` | `string` | e.g. `'#249bf9'` |
+| `toRgbString()` | `string` | e.g. `'rgb(36, 155, 249)'` |
+| `toHsbString()` | `string` | e.g. `'hsb(207, 86%, 98%)'` |
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `(color: Color, hex: string)` | Fires continuously while picking |
+| `changeComplete` | `(color: Color, hex: string)` | Fires when the user finishes picking |
+| `openChange` | `(open: boolean)` | Fires when panel visibility changes |

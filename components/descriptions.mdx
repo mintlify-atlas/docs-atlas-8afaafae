@@ -1,0 +1,76 @@
+---
+title: "Descriptions — label-value detail view"
+description: "antdv-next Descriptions renders label-value pairs for detail pages. Supports horizontal and vertical layouts, bordered style, and responsive column counts."
+---
+
+`Descriptions` renders a structured list of label and value pairs — ideal for detail pages, profile views, and order summaries. Items are defined with `DescriptionsItem`, and the layout adapts across breakpoints using the `column` prop.
+
+## Basic usage
+
+```vue
+<a-descriptions title="User Profile" bordered>
+  <a-descriptions-item label="Name">Alice Johnson</a-descriptions-item>
+  <a-descriptions-item label="Email">alice@example.com</a-descriptions-item>
+  <a-descriptions-item label="Role">Administrator</a-descriptions-item>
+  <a-descriptions-item label="Status">Active</a-descriptions-item>
+</a-descriptions>
+```
+
+## Responsive columns
+
+```vue
+<a-descriptions
+  title="Order Details"
+  :column="{ xs: 1, sm: 2, lg: 3 }"
+  bordered
+>
+  <a-descriptions-item label="Order ID">ORD-001</a-descriptions-item>
+  <a-descriptions-item label="Product">Widget Pro</a-descriptions-item>
+  <a-descriptions-item label="Quantity">5</a-descriptions-item>
+  <a-descriptions-item label="Total" :span="2">$250.00</a-descriptions-item>
+</a-descriptions>
+```
+
+## Descriptions Props
+
+<ParamField path="title" type="string | VueNode">
+  Section heading above the description list.
+</ParamField>
+
+<ParamField path="column" type="number | Breakpoint">
+  Number of columns, or a responsive object `{ xs: 1, sm: 2, lg: 3 }`.
+</ParamField>
+
+<ParamField path="layout" type="'horizontal' | 'vertical'">
+  Layout direction for label and value. Defaults to `'horizontal'`.
+</ParamField>
+
+<ParamField path="bordered" type="boolean">
+  Adds borders between cells for a table-like look.
+</ParamField>
+
+<ParamField path="size" type="'default' | 'middle' | 'small'">
+  Cell padding size.
+</ParamField>
+
+<ParamField path="colon" type="boolean">
+  Shows a colon after each label. Defaults to `true`.
+</ParamField>
+
+## DescriptionsItem Props
+
+<ParamField path="label" type="string | VueNode">
+  The label for this item.
+</ParamField>
+
+<ParamField path="span" type="number">
+  Number of columns this item spans. Defaults to `1`.
+</ParamField>
+
+<ParamField path="labelStyle" type="CSSProperties">
+  CSS styles for the label cell.
+</ParamField>
+
+<ParamField path="contentStyle" type="CSSProperties">
+  CSS styles for the value cell.
+</ParamField>

@@ -1,0 +1,171 @@
+---
+title: "Use Antdv Next with Nuxt.js"
+description: "Add antdv-next to Nuxt 3 via the official @antdv-next/nuxt module. Covers auto-registration, SSR styles, icon support, and all nuxt.config.ts antd options."
+---
+
+Antdv Next has first-class support for server-side rendering and ships an official Nuxt module — `@antdv-next/nuxt` — that handles component auto-registration, icon support, and SSR-safe style injection. This guide walks you through adding Antdv Next to a new or existing Nuxt 3 application.
+
+## Requirements
+
+Before starting, confirm your project meets the following version requirements:
+
+| Package | Minimum version |
+| --- | --- |
+| Nuxt | 4.0.0 |
+| Vue | 3.5.0 |
+| antdv-next | 1.0.4 |
+| @antdv-next/icons | 1.0.1 |
+
+## Steps
+
+<Steps>
+  <Step title="Create a Nuxt project or open an existing one">
+    If you don't have a Nuxt project yet, scaffold one with the official CLI:
+
+    ```bash
+    npx nuxi@latest init my-app
+    cd my-app
+    ```
+
+    If you already have a Nuxt project, open it in your editor and proceed to the next step.
+  </Step>
+
+  <Step title="Install antdv-next and the Nuxt module">
+    The quickest way is to use the `nuxi` module command, which installs the package and adds it to `nuxt.config.ts` automatically:
+
+    ```bash
+    npx nuxi@latest module add @antdv-next/nuxt
+    ```
+
+    Alternatively, install the packages manually:
+
+    <CodeGroup>
+
+    ```bash npm
+    npm i -D @antdv-next/nuxt antdv-next @antdv-next/icons
+    ```
+
+    ```bash yarn
+    yarn add -D @antdv-next/nuxt antdv-next @antdv-next/icons
+    ```
+
+    ```bash pnpm
+    pnpm add -D @antdv-next/nuxt antdv-next @antdv-next/icons
+    ```
+
+    ```bash bun
+    bun add -D @antdv-next/nuxt antdv-next @antdv-next/icons
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Configure nuxt.config.ts">
+    Add `@antdv-next/nuxt` to your modules array. Use the `antd` key to configure the module. The example below enables icon auto-registration and adds the reset stylesheet.
+
+    ```typescript nuxt.config.ts
+    export default defineNuxtConfig({
+      modules: ['@antdv-next/nuxt'],
+      css: ['antdv-next/dist/reset.css'],
+      antd: {
+        prefix: 'A',
+        icon: true,
+      },
+    })
+    ```
+
+    If you use the zero-runtime CSS theme mode (recommended for performance), also include the pre-built stylesheet:
+
+    ```typescript nuxt.config.ts
+    export default defineNuxtConfig({
+      modules: ['@antdv-next/nuxt'],
+      css: [
+        'antdv-next/dist/reset.css',
+        'antdv-next/dist/antd.css',
+      ],
+      antd: {
+        prefix: 'A',
+        icon: true,
+      },
+    })
+    ```
+  </Step>
+
+  <Step title="Use components in pages">
+    All Antdv Next components are auto-imported with the configured prefix. By default the prefix is `A`, so `<AButton>`, `<ATable>`, and `<ADatePicker>` are available in any page or component without manual imports.
+
+    ```vue pages/index.vue
+    <template>
+      <div>
+        <AButton type="primary" @click="handleClick">
+          Click me
+        </AButton>
+        <ADatePicker v-model:value="date" need-confirm style="margin-left: 12px" />
+        <HomeOutlined style="margin-left: 12px; font-size: 18px" />
+      </div>
+    </template>
+
+    <script setup lang="ts">
+    import { ref } from 'vue'
+
+    const date = ref()
+
+    function handleClick() {
+      console.log('clicked')
+    }
+    </script>
+    ```
+  </Step>
+</Steps>
+
+## SSR and StyleProvider
+
+When rendering on the server, antdv-next injects component styles dynamically. In most cases the Nuxt module handles this automatically. If you need fine-grained control over when and where styles are injected — for example, to avoid flash of unstyled content — wrap your layout with `<AStyleProvider>`:
+
+```vue layouts/default.vue
+<template>
+  <AStyleProvider hash-priority="high">
+    <slot />
+  </AStyleProvider>
+</template>
+```
+
+`StyleProvider` is re-exported from `antdv-next` and is also registered as `AStyleProvider` by the Nuxt module when `@antdv-next/cssinjs` is used.
+
+## Module options
+
+The module is configured under the `antd` key in `nuxt.config.ts`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon` | `boolean` | `false` | Enable auto-registration for all `@antdv-next/icons` components. |
+| `prefix` | `string` | `'A'` | Prefix applied to all auto-registered component names. |
+| `include` | `ComponentName[]` | `undefined` | Register only the listed components. Takes priority over `exclude`. |
+| `exclude` | `ComponentName[]` | `undefined` | Exclude the listed components when `include` is not set. |
+| `includeIcons` | `IconName[]` | `undefined` | Register only the listed icon components. Takes priority over `excludeIcons`. |
+| `excludeIcons` | `IconName[]` | `undefined` | Exclude the listed icon components when `includeIcons` is not set. |
+
+<Note>
+  `includeIcons` and `excludeIcons` have no effect unless `icon: true` is set.
+</Note>
+
+## Full configuration example
+
+The following shows a complete setup that selectively registers components and icons to minimize bundle size.
+
+```css assets/entry.css
+@import "antdv-next/dist/reset.css";
+```
+
+```typescript nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ['@antdv-next/nuxt'],
+  css: ['~/assets/entry.css'],
+  antd: {
+    prefix: 'A',
+    icon: true,
+    include: ['Button', 'Table', 'QRCode'],
+    includeIcons: ['HomeOutlined', 'SearchOutlined'],
+  },
+})
+```

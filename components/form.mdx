@@ -1,0 +1,129 @@
+---
+title: "Form — validation and field management"
+description: "antdv-next Form wraps inputs with validation rules and error messages. Use FormItem, v-model:model, and the form instance validate/resetFields API for control."
+---
+
+The `Form` component binds a reactive model object to a set of fields and coordinates validation across all of them. Each field is declared with a `FormItem` wrapper that owns its label, validation rules, and error display. You retrieve a form instance via `ref` and call its methods to validate programmatically, reset state, or scroll to the first failing field.
+
+## Props — Form
+
+<ParamField path="model" type="Record<string, any>">
+  Reactive object whose keys map to each `FormItem` `name`. Required for validation to work.
+</ParamField>
+
+<ParamField path="layout" type="string" default="horizontal">
+  Arrangement of label and input: `horizontal`, `vertical`, or `inline`.
+</ParamField>
+
+<ParamField path="labelCol" type="ColProps">
+  Grid column config for the label cell, e.g. `{ span: 6 }`.
+</ParamField>
+
+<ParamField path="wrapperCol" type="ColProps">
+  Grid column config for the input cell, e.g. `{ span: 18 }`.
+</ParamField>
+
+<ParamField path="colon" type="boolean" default="true">
+  Whether to append a colon after each label.
+</ParamField>
+
+<ParamField path="scrollToFirstError" type="boolean | ScrollFocusOptions">
+  Scroll to the first invalid field on submit failure. Pass an options object for fine-grained control.
+</ParamField>
+
+<ParamField path="rules" type="Record<string, Rule[]>">
+  Top-level rule map keyed by field `name`. Individual `FormItem` rules take precedence.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Disables all form controls via context.
+</ParamField>
+
+<ParamField path="size" type="string">
+  Size applied to all form controls: `small`, `middle`, or `large`.
+</ParamField>
+
+## Props — FormItem
+
+<ParamField path="name" type="string | string[]">
+  Field name used to read and write the corresponding key in `model`.
+</ParamField>
+
+<ParamField path="label" type="string">
+  Label text rendered to the left or above the input depending on layout.
+</ParamField>
+
+<ParamField path="rules" type="Rule[]">
+  Array of validation rule objects. Each rule may have `required`, `min`, `max`, `pattern`, `validator`, and `trigger`.
+</ParamField>
+
+<ParamField path="validateStatus" type="string">
+  Override the validation icon: `success`, `warning`, `error`, or `validating`.
+</ParamField>
+
+<ParamField path="help" type="string">
+  Custom help text shown below the field. When omitted, error messages from validation are shown instead.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `finish` | `values` | All fields passed validation. |
+| `finishFailed` | `errorInfo` | At least one field failed. |
+| `valuesChange` | `changedValues, values` | Any field value changed. |
+
+## Form instance methods
+
+Access via `const formRef = ref<FormInstance>()` and `:ref="formRef"` on `<a-form>`.
+
+- `validate()` — validates all fields, returns a `Promise`.
+- `validateFields(names?)` — validates specific fields by name.
+- `resetFields(names?)` — resets values and clears errors.
+- `clearValidate(names?)` — clears error state without resetting values.
+- `setFieldValue(name, value)` — sets a single field value.
+- `scrollToField(name)` — scrolls to and focuses the given field.
+
+## Example
+
+```vue
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+import { Form, FormItem, Input, Button } from 'antdv-next'
+import type { FormInstance } from 'antdv-next'
+
+const formRef = ref<FormInstance>()
+const model = reactive({ username: '', password: '' })
+const rules = {
+  username: [{ required: true, message: 'Username is required' }],
+  password: [{ required: true, min: 8, message: 'At least 8 characters' }],
+}
+
+function onFinish(values: typeof model) {
+  console.log('submitted', values)
+}
+</script>
+
+<template>
+  <a-form
+    ref="formRef"
+    :model="model"
+    :rules="rules"
+    layout="horizontal"
+    :label-col="{ span: 6 }"
+    :wrapper-col="{ span: 18 }"
+    @finish="onFinish"
+  >
+    <a-form-item label="Username" name="username">
+      <a-input v-model:value="model.username" />
+    </a-form-item>
+    <a-form-item label="Password" name="password">
+      <a-input-password v-model:value="model.password" />
+    </a-form-item>
+    <a-form-item :wrapper-col="{ offset: 6 }">
+      <a-button type="primary" html-type="submit">Submit</a-button>
+      <a-button @click="formRef?.resetFields()">Reset</a-button>
+    </a-form-item>
+  </a-form>
+</template>
+```

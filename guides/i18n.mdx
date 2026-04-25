@@ -1,0 +1,146 @@
+---
+title: "Internationalization with ConfigProvider"
+description: "Configure antdv-next for any of 70+ supported languages using the locale prop on ConfigProvider. Switch locales at runtime with Vue reactivity."
+---
+
+antdv-next ships with English as the default language, but it includes built-in locale objects for more than 70 languages. Every piece of UI text produced by the component library — button labels in date pickers, empty-state messages, validation text, pagination labels — is controlled through a single `locale` prop on `ConfigProvider`. Because `locale` is reactive, you can switch languages at runtime with no page reload.
+
+## Using ConfigProvider with a locale
+
+Wrap your application root with `a-config-provider` and pass a locale object imported from the `antdv-next/locale/` directory. The filename follows the pattern `language_REGION` (for example `fr_FR` for French or `zh_CN` for Simplified Chinese).
+
+```vue
+<script lang="ts" setup>
+import frFR from 'antdv-next/locale/fr_FR'
+</script>
+
+<template>
+  <a-config-provider :locale="frFR">
+    <App />
+  </a-config-provider>
+</template>
+```
+
+## Switching locale at runtime
+
+Because `locale` is a reactive prop, you can drive it from a `ref` or `computed` and change it in response to user input. Vue's reactivity system propagates the new locale to every component in the tree automatically.
+
+```vue
+<script lang="ts" setup>
+import { ref } from 'vue'
+import enUS from 'antdv-next/locale/en_US'
+import zhCN from 'antdv-next/locale/zh_CN'
+import frFR from 'antdv-next/locale/fr_FR'
+
+const locales = { enUS, zhCN, frFR } as const
+type LocaleKey = keyof typeof locales
+
+const currentLocale = ref<LocaleKey>('enUS')
+</script>
+
+<template>
+  <div>
+    <a-space>
+      <a-button @click="currentLocale = 'enUS'">English</a-button>
+      <a-button @click="currentLocale = 'zhCN'">中文</a-button>
+      <a-button @click="currentLocale = 'frFR'">Français</a-button>
+    </a-space>
+
+    <a-config-provider :locale="locales[currentLocale]">
+      <App />
+    </a-config-provider>
+  </div>
+</template>
+```
+
+## Supported locales
+
+The table below lists every language currently bundled with antdv-next. Import the locale file using `import xx_XX from 'antdv-next/locale/xx_XX'`.
+
+| Language | Filename |
+| --- | --- |
+| Arabic | `ar_EG` |
+| Azerbaijani | `az_AZ` |
+| Bulgarian | `bg_BG` |
+| Bangla (Bangladesh) | `bn_BD` |
+| Belarusian | `by_BY` |
+| Catalan | `ca_ES` |
+| Czech | `cs_CZ` |
+| Danish | `da_DK` |
+| German | `de_DE` |
+| Greek | `el_GR` |
+| English (United Kingdom) | `en_GB` |
+| English | `en_US` |
+| Spanish | `es_ES` |
+| Basque | `eu_ES` |
+| Estonian | `et_EE` |
+| Persian | `fa_IR` |
+| Finnish | `fi_FI` |
+| French (Belgium) | `fr_BE` |
+| French (Canada) | `fr_CA` |
+| French (France) | `fr_FR` |
+| Irish (Ireland) | `ga_IE` |
+| Galician (Spain) | `gl_ES` |
+| Hebrew | `he_IL` |
+| Hindi | `hi_IN` |
+| Croatian | `hr_HR` |
+| Hungarian | `hu_HU` |
+| Armenian | `hy_AM` |
+| Indonesian | `id_ID` |
+| Italian | `it_IT` |
+| Icelandic | `is_IS` |
+| Japanese | `ja_JP` |
+| Georgian | `ka_GE` |
+| Kurdish (Kurmanji) | `kmr_IQ` |
+| Kannada | `kn_IN` |
+| Kazakh | `kk_KZ` |
+| Khmer | `km_KH` |
+| Korean | `ko_KR` |
+| Lithuanian | `lt_LT` |
+| Latvian | `lv_LV` |
+| Macedonian | `mk_MK` |
+| Malayalam (India) | `ml_IN` |
+| Marathi (India) | `mr_IN` |
+| Mongolian | `mn_MN` |
+| Malay (Malaysia) | `ms_MY` |
+| Burmese | `my_MM` |
+| Norwegian | `nb_NO` |
+| Nepali | `ne_NP` |
+| Dutch (Belgium) | `nl_BE` |
+| Dutch | `nl_NL` |
+| Polish | `pl_PL` |
+| Portuguese (Brazil) | `pt_BR` |
+| Portuguese | `pt_PT` |
+| Romanian | `ro_RO` |
+| Russian | `ru_RU` |
+| Sinhalese / Sinhala | `si_LK` |
+| Slovak | `sk_SK` |
+| Serbian | `sr_RS` |
+| Slovenian | `sl_SI` |
+| Swedish | `sv_SE` |
+| Tamil | `ta_IN` |
+| Thai | `th_TH` |
+| Turkish | `tr_TR` |
+| Turkmen | `tk_TK` |
+| Urdu (Pakistan) | `ur_PK` |
+| Ukrainian | `uk_UA` |
+| Uzbek (latn) | `uz_UZ` |
+| Vietnamese | `vi_VN` |
+| Chinese (Simplified) | `zh_CN` |
+| Chinese (Traditional) | `zh_HK` |
+| Chinese (Traditional) | `zh_TW` |
+
+## Date picker and dayjs
+
+`ConfigProvider`'s `locale` prop controls the UI strings rendered by antdv-next components. The date picker also relies on [dayjs](https://day.js.org) to format and parse dates, and dayjs has its own separate locale system.
+
+<Note>
+  To fully localize date and time formatting in `DatePicker` and `TimePicker`, you must also import and apply the matching dayjs locale. The `ConfigProvider` locale alone does not change how dayjs formats dates.
+
+  ```ts
+  import dayjs from 'dayjs'
+  import 'dayjs/locale/fr'
+
+  dayjs.locale('fr')
+  ```
+</Note>

@@ -1,0 +1,167 @@
+---
+title: "CSS-in-JS styling with @antdv-next/cssinjs"
+description: "Antdv Next uses a CSS-in-JS runtime for zero-conflict, on-demand style injection. Learn how StyleProvider, token extraction, and server-side rendering work."
+---
+
+Antdv Next generates component styles at runtime using `@antdv-next/cssinjs`, a CSS-in-JS engine purpose-built for the library. Styles are injected into the document on demand — only when a component is actually rendered — so unused components contribute zero bytes to the page. Each style block carries a content-hashed class name, which means antdv-next styles never collide with your own CSS or with other component libraries on the same page.
+
+## StyleProvider
+
+`StyleProvider` (exported as `<a-style-provider>` in the global component registry) is the root configuration boundary for the CSS-in-JS runtime. Wrap your application with it when you need to control hash priority, shadow DOM injection, or SSR cache sharing.
+
+```vue
+<template>
+  <a-style-provider :hash-priority="'high'">
+    <App />
+  </a-style-provider>
+</template>
+```
+
+`hashPriority` controls the CSS specificity of generated selectors:
+
+- `'low'` (default) — uses `:where()` pseudo-class to keep specificity at zero, making it easy to override with your own styles.
+- `'high'` — emits standard class selectors with natural specificity, matching the behavior of Ant Design v4 and earlier.
+
+The full set of `StyleProvider` props maps to `StyleContextProps` from `@antdv-next/cssinjs`:
+
+| Prop | Type | Description |
+|---|---|---|
+| `hashPriority` | `'low' \| 'high'` | Selector specificity mode. |
+| `cache` | `CacheEntity` | Shared style cache instance (required for SSR). |
+| `container` | `Element \| ShadowRoot` | DOM node to inject `<style>` tags into. |
+| `transformers` | `Transformer[]` | Pre-injection CSS transformers (e.g. `autoPrefixTransformer`, `px2remTransformer`). |
+| `linters` | `Linter[]` | CSS linters that run after transformation. |
+| `layer` | `boolean` | Wraps all generated styles in a `@layer` block to isolate them from unlayered CSS. |
+| `ssrInline` | `boolean` | Renders inline `<style>` tags per component during SSR as a fallback. |
+| `autoClear` | `boolean` | Removes injected styles when the last consumer unmounts. |
+
+## Compatible styles
+
+When antdv-next components are rendered inside a **shadow DOM** or inside an iframe controlled by a third-party library, the default `<head>`-injection strategy places styles outside the shadow root where they have no effect. Use the `container` prop to redirect style injection into the correct root:
+
+```vue
+<template>
+  <div ref="hostRef" />
+</template>
+
+<script setup lang="ts">
+import { createCache, StyleProvider } from '@antdv-next/cssinjs'
+import { createApp, onMounted, ref } from 'vue'
+import App from './App.vue'
+
+const hostRef = ref<HTMLElement>()
+
+onMounted(() => {
+  const shadowRoot = hostRef.value!.attachShadow({ mode: 'open' })
+  const mountPoint = document.createElement('div')
+  shadowRoot.appendChild(mountPoint)
+
+  const cache = createCache()
+
+  createApp({
+    render() {
+      return (
+        <StyleProvider cache={cache} container={shadowRoot}>
+          <App />
+        </StyleProvider>
+      )
+    },
+  }).mount(mountPoint)
+})
+</script>
+```
+
+The `layer` option is useful when integrating with projects that use unlayered global CSS. Wrapping antdv-next output in `@layer antd { … }` gives your own styles automatic precedence regardless of source order.
+
+## Server-side rendering
+
+During SSR the browser DOM is not available, so the CSS-in-JS runtime cannot inject `<style>` tags directly. Instead, collect the generated CSS into a string after rendering and embed it in the HTML response.
+
+<Steps>
+  <Step title="Create a shared cache instance">
+    Instantiate `createCache()` once per request. Pass it to both `StyleProvider` and the `extractStyle` call so they share the same style registry.
+
+    ```typescript
+    import { createCache, extractStyle, StyleProvider } from '@antdv-next/cssinjs'
+    import { createSSRApp } from 'vue'
+    import { renderToString } from 'vue/server-renderer'
+    import App from './App.vue'
+
+    const cache = createCache()
+    ```
+  </Step>
+  <Step title="Render the application">
+    Wrap the root component with `StyleProvider` and render it to an HTML string. The render pass populates `cache` with every style that was used.
+
+    ```typescript
+    const app = createSSRApp({
+      render() {
+        return (
+          <StyleProvider cache={cache}>
+            <App />
+          </StyleProvider>
+        )
+      },
+    })
+
+    const html = await renderToString(app)
+    ```
+  </Step>
+  <Step title="Extract and inject the critical CSS">
+    Call `extractStyle(cache)` to serialise all collected styles into a CSS string, then embed it in a `<style>` tag inside `<head>`.
+
+    ```typescript
+    const styleText = extractStyle(cache)
+
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>${styleText}</style>
+        </head>
+        <body>
+          <div id="app">${html}</div>
+        </body>
+      </html>
+    `
+    ```
+  </Step>
+</Steps>
+
+`extractStyle` accepts an optional `once` flag. When `once: true`, each cached style is emitted only once across multiple calls — useful in streaming SSR where you call `extractStyle` several times for different chunks.
+
+## Reduce bundle size
+
+By default, antdv-next generates all styles at runtime through the CSS-in-JS engine. For production deployments where dynamic theming is not required, you can eliminate the runtime entirely using **zero-runtime mode**.
+
+<CodeGroup>
+
+```typescript main.ts (zero-runtime)
+// 1. Import the pre-built stylesheet
+import 'antdv-next/dist/antd.css'
+```
+
+```vue App.vue (zero-runtime)
+<template>
+  <!-- 2. Signal to ConfigProvider that no runtime CSS generation is needed -->
+  <a-config-provider :theme="{ zeroRuntime: true }">
+    <MyApp />
+  </a-config-provider>
+</template>
+```
+
+</CodeGroup>
+
+`antdv-next/dist/antd.css` contains every component's styles without hashed class names. This removes the CSS-in-JS runtime cost entirely but disables dynamic theming — token overrides in `ConfigProvider` will have no effect on styles.
+
+<Note>
+  `zeroRuntime` is a static configuration and cannot be toggled at runtime via a reactive `ConfigProvider` prop. Set it once at application startup.
+</Note>
+
+To restore CSS reset styles (normalising browser defaults) without pulling in the full component stylesheet, import the standalone reset:
+
+```typescript
+import 'antdv-next/dist/reset.css'
+```
+
+This is safe to use in all modes, including the default runtime CSS-in-JS mode.

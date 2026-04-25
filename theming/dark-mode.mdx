@@ -1,0 +1,186 @@
+---
+title: "Enable dark mode and compact mode"
+description: "Switch antdv-next components to dark or compact mode at runtime using theme algorithms in ConfigProvider — no CSS overrides required."
+---
+
+Antdv Next implements dark mode and compact mode through **algorithms** — pure functions that transform Seed Tokens into the full Map Token palette. Because the algorithm is just a reactive prop on `ConfigProvider`, switching modes at runtime is as simple as changing a `ref`. There are no CSS class toggles, no stylesheet swaps, and no `!important` overrides needed.
+
+## Dark mode
+
+Pass `theme.darkAlgorithm` to the `algorithm` property of `ConfigProvider`. Every component inside the provider will render with a dark-mode palette derived from the same seed tokens as the light theme.
+
+```vue
+<template>
+  <a-config-provider
+    :theme="{
+      algorithm: theme.darkAlgorithm,
+    }"
+  >
+    <a-space>
+      <a-input placeholder="Please Input" />
+      <a-button type="primary">Submit</a-button>
+    </a-space>
+  </a-config-provider>
+</template>
+
+<script setup lang="ts">
+import { theme } from 'antdv-next'
+</script>
+```
+
+You can still combine dark mode with seed token overrides. For example, to use a custom brand color in dark mode:
+
+```vue
+<template>
+  <a-config-provider
+    :theme="{
+      algorithm: theme.darkAlgorithm,
+      token: {
+        colorPrimary: '#00b96b',
+      },
+    }"
+  >
+    <App />
+  </a-config-provider>
+</template>
+
+<script setup lang="ts">
+import { theme } from 'antdv-next'
+</script>
+```
+
+## Compact mode
+
+`theme.compactAlgorithm` reduces control heights, padding, and font sizes across all components. It is designed for data-dense interfaces — admin panels, dashboards, and tables with many rows.
+
+```vue
+<template>
+  <a-config-provider
+    :theme="{
+      algorithm: theme.compactAlgorithm,
+    }"
+  >
+    <a-space>
+      <a-input placeholder="Please Input" />
+      <a-button type="primary">Submit</a-button>
+    </a-space>
+  </a-config-provider>
+</template>
+
+<script setup lang="ts">
+import { theme } from 'antdv-next'
+</script>
+```
+
+## Combine algorithms
+
+Pass an array to `algorithm` to apply multiple algorithms in sequence. The output of each algorithm feeds into the next. The most common combination is dark + compact:
+
+```vue
+<template>
+  <a-config-provider
+    :theme="{
+      algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+    }"
+  >
+    <App />
+  </a-config-provider>
+</template>
+
+<script setup lang="ts">
+import { theme } from 'antdv-next'
+</script>
+```
+
+Algorithms are applied left-to-right. You can mix preset algorithms with custom algorithm functions in the same array.
+
+## Toggle at runtime
+
+Because `algorithm` is a reactive prop, you can wire it to any Vue ref and switch modes in response to user interaction, system preference changes, or application state.
+
+```vue
+<template>
+  <a-button @click="toggleDark">
+    Switch to {{ isDark ? 'light' : 'dark' }} mode
+  </a-button>
+
+  <a-config-provider
+    :theme="{
+      algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+    }"
+  >
+    <a-space style="margin-top: 16px">
+      <a-input placeholder="Please Input" />
+      <a-button type="primary">Submit</a-button>
+    </a-space>
+  </a-config-provider>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { theme } from 'antdv-next'
+
+const isDark = ref(false)
+
+function toggleDark() {
+  isDark.value = !isDark.value
+}
+</script>
+```
+
+To respond to the operating system's color scheme preference automatically, use `window.matchMedia`:
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { theme } from 'antdv-next'
+
+const isDark = ref(
+  window.matchMedia('(prefers-color-scheme: dark)').matches
+)
+
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+function onSystemThemeChange(e: MediaQueryListEvent) {
+  isDark.value = e.matches
+}
+
+onMounted(() => mediaQuery.addEventListener('change', onSystemThemeChange))
+onBeforeUnmount(() => mediaQuery.removeEventListener('change', onSystemThemeChange))
+</script>
+```
+
+## Custom algorithm
+
+A `MappingAlgorithm` is a plain function with the signature `(token: SeedToken) => MapToken`. You can write your own to implement brand-specific colour derivation, high-contrast accessibility themes, or any mapping logic not covered by the preset algorithms.
+
+```typescript
+import type { MappingAlgorithm, SeedToken, MapToken } from 'antdv-next'
+import { theme } from 'antdv-next'
+
+const highContrastAlgorithm: MappingAlgorithm = (token: SeedToken): MapToken => {
+  // Start from the default light palette, then apply overrides
+  const baseMap = theme.defaultAlgorithm(token)
+
+  return {
+    ...baseMap,
+    colorText: '#000000',
+    colorBgContainer: '#ffffff',
+    colorBorder: '#000000',
+  }
+}
+```
+
+Pass the function directly to `algorithm` or include it in a combined array:
+
+```vue
+<template>
+  <a-config-provider :theme="{ algorithm: highContrastAlgorithm }">
+    <App />
+  </a-config-provider>
+</template>
+```
+
+<Tip>
+  You can nest `ConfigProvider` to apply dark mode to only part of your page. Place one `ConfigProvider` with `darkAlgorithm` around a sidebar or modal while the rest of the page continues to use `defaultAlgorithm`. Tokens not re-specified in the child provider are inherited from the parent.
+</Tip>

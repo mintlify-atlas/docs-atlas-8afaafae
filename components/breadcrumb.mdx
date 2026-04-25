@@ -1,0 +1,135 @@
+---
+title: "Breadcrumb — page location trail"
+description: "antdv-next Breadcrumb renders a navigational trail from a list of items or router integration, with customizable separators and dropdown menus on each crumb."
+---
+
+The `Breadcrumb` component displays a hierarchical path to the current page, helping users understand where they are and navigate upward. Items are supplied either through the `items` array prop for a data-driven approach, or by composing `BreadcrumbItem` children directly. Each crumb supports an optional dropdown menu for multi-path navigation.
+
+## Breadcrumb props
+
+<ParamField path="items" type="ItemType[]">
+  Array of breadcrumb entries rendered in order. Each entry is a `BreadcrumbItemType` or a `BreadcrumbSeparatorType`.
+</ParamField>
+
+<ParamField path="separator" type="VueNode" default="'/'">
+  Separator rendered between crumbs. Accepts any renderable value or a `#separator` slot.
+</ParamField>
+
+<ParamField path="params" type="Record<string, string>">
+  Path parameter map applied when building hrefs from `path` strings. For example, `{ id: '42' }` turns `path: '/users/:id'` into `/users/42`.
+</ParamField>
+
+<ParamField path="rootClass" type="string">
+  Additional CSS class applied to the root `<nav>` element.
+</ParamField>
+
+## ItemType shape
+
+Each entry in the `items` array may include:
+
+| Field | Type | Description |
+|---|---|---|
+| `key` | `Key` | Unique identifier for the crumb. |
+| `title` | `VueNode` | Crumb label displayed to the user. |
+| `href` | `string` | Direct link URL (takes precedence over `path`). |
+| `path` | `string` | Path segment appended to all preceding segments. |
+| `menu` | `BreadcrumbItemProps['menu']` | Dropdown menu definition shown on the crumb. |
+| `onClick` | `(event: MouseEvent) => void` | Click handler for the crumb. |
+| `dropdownProps` | `DropdownProps` | Extra props forwarded to the dropdown trigger. |
+| `type` | `'separator'` | Renders a standalone separator instead of a crumb. |
+
+## BreadcrumbItem props
+
+`BreadcrumbItem` is available as `Breadcrumb.Item` and may be used as a slot-based alternative to `items`.
+
+<ParamField path="href" type="string">
+  Link destination for the crumb anchor.
+</ParamField>
+
+<ParamField path="menu" type="object">
+  Dropdown menu configuration. Accepts an `items` array compatible with the `Menu` component.
+</ParamField>
+
+<ParamField path="separator" type="VueNode">
+  Per-crumb separator override.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `clickItem` | `(item: ItemType, event: MouseEvent)` | Fired when any breadcrumb item is clicked. |
+
+## Examples
+
+### Items array
+
+```vue
+<script setup lang="ts">
+import { ABreadcrumb } from 'antdv-next'
+import type { ItemType } from 'antdv-next'
+
+const items: ItemType[] = [
+  { title: 'Home', href: '/' },
+  { title: 'Products', href: '/products' },
+  { title: 'Laptop Pro 15' },
+]
+</script>
+
+<template>
+  <ABreadcrumb :items="items" />
+</template>
+```
+
+### Crumb with a dropdown menu
+
+```vue
+<script setup lang="ts">
+import { ABreadcrumb } from 'antdv-next'
+
+const items = [
+  { title: 'Home', href: '/' },
+  {
+    title: 'Category',
+    menu: {
+      items: [
+        { key: 'electronics', label: 'Electronics' },
+        { key: 'clothing', label: 'Clothing' },
+        { key: 'books', label: 'Books' },
+      ],
+    },
+  },
+  { title: 'Current Page' },
+]
+</script>
+
+<template>
+  <ABreadcrumb :items="items" separator=">" />
+</template>
+```
+
+### Router-integrated breadcrumb
+
+Use the `path` field to have the component automatically concatenate path segments into hrefs.
+
+```vue
+<script setup lang="ts">
+import { ABreadcrumb } from 'antdv-next'
+
+const items = [
+  { title: 'Home', path: '/' },
+  { title: 'Users', path: 'users' },
+  { title: 'Profile', path: ':id' },
+]
+
+const params = { id: '42' }
+</script>
+
+<template>
+  <ABreadcrumb :items="items" :params="params" />
+</template>
+```
+
+<Note>
+  When both `href` and `path` are provided on the same item, `href` takes precedence and the `path` value is not appended to the accumulated segments.
+</Note>

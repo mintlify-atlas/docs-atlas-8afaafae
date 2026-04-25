@@ -1,0 +1,76 @@
+---
+title: "Statistic and StatisticTimer"
+description: "antdv-next Statistic displays a formatted number with a label, prefix, and suffix. StatisticTimer shows a live countdown or count-up timer."
+---
+
+`Statistic` renders a prominent numeric value with a title, prefix icon, suffix text, and number formatting. Use it in dashboards, KPI cards, or any summary view. `StatisticTimer` provides a built-in countdown or elapsed-time display that updates automatically.
+
+## Basic statistic
+
+```vue
+<a-statistic title="Active Users" :value="1128" />
+<a-statistic title="Revenue" :value="9280" prefix="$" :precision="2" />
+```
+
+## With prefix and suffix
+
+```vue
+<a-statistic title="Growth" :value="11.28" suffix="%" />
+```
+
+## Countdown timer
+
+```vue
+<script setup lang="ts">
+import dayjs from 'dayjs'
+const deadline = dayjs().add(2, 'hour').valueOf()
+</script>
+
+<template>
+  <a-statistic-timer title="Time remaining" :value="deadline" format="HH:mm:ss" />
+</template>
+```
+
+## Statistic Props
+
+<ParamField path="title" type="string | VueNode">
+  Label displayed above the value.
+</ParamField>
+
+<ParamField path="value" type="number | string">
+  The main numeric value to display.
+</ParamField>
+
+<ParamField path="precision" type="number">
+  Number of decimal places. Defaults to `0`.
+</ParamField>
+
+<ParamField path="prefix" type="string | VueNode">
+  Content rendered before the number (e.g. `'$'` or an icon).
+</ParamField>
+
+<ParamField path="suffix" type="string | VueNode">
+  Content rendered after the number (e.g. `'%'`).
+</ParamField>
+
+<ParamField path="groupSeparator" type="string">
+  Thousands separator. Defaults to `','`.
+</ParamField>
+
+<ParamField path="decimalSeparator" type="string">
+  Decimal separator. Defaults to `'.'`.
+</ParamField>
+
+<ParamField path="valueStyle" type="CSSProperties">
+  CSS styles applied to the value element.
+</ParamField>
+
+## StatisticTimer Props
+
+<ParamField path="value" type="number">
+  Target timestamp in milliseconds (for countdown) or start timestamp (for count-up).
+</ParamField>
+
+<ParamField path="format" type="string">
+  dayjs-compatible format string. Defaults to `'HH:mm:ss'`.
+</ParamField>

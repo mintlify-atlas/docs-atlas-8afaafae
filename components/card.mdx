@@ -1,0 +1,79 @@
+---
+title: "Card — content container with header and actions"
+description: "antdv-next Card wraps content in a bordered container with an optional title, extra header actions, cover image, meta section, tab list, and nested grid cards."
+---
+
+`Card` is a versatile surface component for grouping related content. It supports a header with `title` and `extra` slots, a `cover` image, `actions` footer icons, and nested `CardGrid` and `CardMeta` sub-components. Use the `loading` prop to show a skeleton while content loads.
+
+## Basic card
+
+```vue
+<a-card title="Project Status" style="width: 300px">
+  <template #extra><a href="#">More</a></template>
+  <p>Deployment pipeline is healthy.</p>
+  <p>Last updated: 2 hours ago.</p>
+</a-card>
+```
+
+## Card with meta
+
+```vue
+<a-card style="width: 300px" :hoverable="true">
+  <template #cover>
+    <img alt="cover" src="https://placeholder.co/300x150" />
+  </template>
+  <a-card-meta title="Card Title" description="A short description of this card." />
+</a-card>
+```
+
+## Card grid
+
+```vue
+<a-card title="Metrics">
+  <a-card-grid style="width: 33%">CPU: 42%</a-card-grid>
+  <a-card-grid style="width: 33%">Memory: 68%</a-card-grid>
+  <a-card-grid style="width: 33%">Disk: 55%</a-card-grid>
+</a-card>
+```
+
+## Props
+
+<ParamField path="title" type="string | VueNode">
+  Card header title. Also available as the `title` slot.
+</ParamField>
+
+<ParamField path="extra" type="string | VueNode">
+  Content in the top-right of the header. Use the `extra` slot.
+</ParamField>
+
+<ParamField path="bordered" type="boolean">
+  Shows a border. Defaults to `true`.
+</ParamField>
+
+<ParamField path="hoverable" type="boolean">
+  Lifts the card with a shadow on hover.
+</ParamField>
+
+<ParamField path="loading" type="boolean">
+  Replaces content with a skeleton placeholder.
+</ParamField>
+
+<ParamField path="size" type="'default' | 'small'">
+  Padding size. `'small'` reduces inner padding.
+</ParamField>
+
+<ParamField path="cover" type="VueNode">
+  Cover image or media shown above the card body. Use the `cover` slot.
+</ParamField>
+
+<ParamField path="actions" type="VueNode[]">
+  Footer action icons rendered as a row at the bottom.
+</ParamField>
+
+<ParamField path="tabList" type="{ key, tab }[]">
+  Renders tabs in the card header for switching content sections.
+</ParamField>
+
+<ParamField path="activeTabKey" type="string">
+  Controlled active tab when using `tabList`.
+</ParamField>

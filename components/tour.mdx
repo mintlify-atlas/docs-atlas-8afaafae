@@ -1,0 +1,86 @@
+---
+title: "Tour — guided product walkthrough"
+description: "antdv-next Tour overlays step-by-step guidance popups that highlight UI elements. Configure steps with targets, titles, descriptions, and custom actions."
+---
+
+`Tour` walks users through a product feature by highlighting UI elements one step at a time with an overlay and instructional popover. It's useful for onboarding, feature discovery, and contextual help. Define each step with a `target` (a DOM ref), a `title`, and a `description`.
+
+## Basic tour
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const open = ref(false)
+const buttonRef = ref<HTMLElement>()
+const inputRef = ref<HTMLElement>()
+
+const steps = [
+  {
+    title: 'Step 1: Click the button',
+    description: 'Use this button to save your changes.',
+    target: () => buttonRef.value,
+  },
+  {
+    title: 'Step 2: Enter your name',
+    description: 'Type your full name in this field.',
+    target: () => inputRef.value,
+  },
+]
+</script>
+
+<template>
+  <a-button ref="buttonRef" @click="open = true">Start Tour</a-button>
+  <a-input ref="inputRef" placeholder="Your name" />
+
+  <a-tour v-model:current="current" :open="open" :steps="steps" @close="open = false" />
+</template>
+```
+
+## Step config
+
+Each entry in `steps` supports:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | `string \| VueNode` | Step title |
+| `description` | `string \| VueNode` | Step body text |
+| `target` | `() => HTMLElement \| null` | Element to highlight |
+| `placement` | `string` | Popup placement (same as Tooltip) |
+| `cover` | `VueNode` | Image or media shown above the title |
+| `nextButtonProps` | `ButtonProps` | Next button customization |
+| `prevButtonProps` | `ButtonProps` | Previous button customization |
+
+## Tour Props
+
+<ParamField path="open" type="boolean">
+  Controls whether the tour is visible.
+</ParamField>
+
+<ParamField path="current" type="number">
+  Controlled current step index via `v-model:current`.
+</ParamField>
+
+<ParamField path="steps" type="TourStepItem[]">
+  Array of step configuration objects.
+</ParamField>
+
+<ParamField path="type" type="'default' | 'primary'">
+  Visual style of the tour popover. Defaults to `'default'`.
+</ParamField>
+
+<ParamField path="mask" type="boolean | { style?, color? }">
+  Controls the backdrop mask. Defaults to `true`.
+</ParamField>
+
+<ParamField path="scrollIntoViewOptions" type="boolean | ScrollIntoViewOptions">
+  Whether to scroll to each highlighted element. Defaults to `true`.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `close` | — | Fires when the tour is closed |
+| `finish` | — | Fires when all steps are completed |
+| `change` | `(current: number)` | Fires when the step changes |

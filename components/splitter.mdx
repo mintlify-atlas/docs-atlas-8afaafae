@@ -1,0 +1,173 @@
+---
+title: "Splitter — resizable panel layout"
+description: "antdv-next Splitter creates resizable split panes via SplitterPanel. Supports horizontal and vertical layouts, min/max size constraints, and collapsible panels."
+---
+
+`Splitter` creates a container divided into two or more resizable panes separated by a draggable bar. Each pane is defined by a `SplitterPanel` child. Users can drag the bar between panels to redistribute space, and panels can be configured with minimum and maximum size constraints. Panels also support a collapsible mode that adds a one-click fold/unfold button to the separator bar. The layout can be oriented horizontally (side-by-side panels) or vertically (stacked panels).
+
+## Splitter props
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Direction of the split. `'horizontal'` places panels side by side; `'vertical'` stacks them.
+</ParamField>
+
+<ParamField path="layout" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Deprecated — use `orientation`. Sets the split direction.
+</ParamField>
+
+<ParamField path="vertical" type="boolean">
+  Shorthand for `orientation="vertical"`.
+</ParamField>
+
+<ParamField path="lazy" type="boolean" default="false">
+  When `true`, the panels only update their sizes after the user releases the drag handle, rather than continuously during dragging. Useful for panels with expensive renders.
+</ParamField>
+
+<ParamField path="onResizeStart" type="(sizes: number[]) => void">
+  Callback fired when the user begins dragging a split bar. Receives the array of current panel sizes as percentages.
+</ParamField>
+
+<ParamField path="onResize" type="(sizes: number[]) => void">
+  Callback fired continuously while the user drags a split bar. Receives the updated panel sizes.
+</ParamField>
+
+<ParamField path="onResizeEnd" type="(sizes: number[]) => void">
+  Callback fired when the user releases the split bar. Receives the final panel sizes.
+</ParamField>
+
+<ParamField path="onCollapse" type="(collapsed: boolean[], sizes: number[]) => void">
+  Callback fired when any panel is collapsed or expanded via the collapsible icon.
+</ParamField>
+
+## Splitter slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | `SplitterPanel` children. |
+| `draggerIcon` | Custom icon for the drag handle. |
+| `collapsibleIconStart` | Custom icon for the collapse-toward-start button. |
+| `collapsibleIconEnd` | Custom icon for the collapse-toward-end button. |
+
+## SplitterPanel props
+
+<ParamField path="size" type="number | string">
+  Initial controlled size of the panel as a percentage (0–100) or a CSS length string. When provided, the panel size is managed externally.
+</ParamField>
+
+<ParamField path="defaultSize" type="number | string">
+  Initial uncontrolled size of the panel. Used only on first render; subsequent drags manage the size internally.
+</ParamField>
+
+<ParamField path="min" type="number | string">
+  Minimum size of the panel. A number is treated as a percentage; a string such as `'100px'` is a pixel floor. The drag handle cannot be moved past this limit.
+</ParamField>
+
+<ParamField path="max" type="number | string">
+  Maximum size of the panel. Prevents the panel from growing beyond this limit when the handle is dragged.
+</ParamField>
+
+<ParamField path="collapsible" type="boolean | { start?: boolean, end?: boolean, showCollapsibleIcon?: 'hover' | 'always' }" default="false">
+  Enable collapse buttons on the separator adjacent to this panel. Pass `true` to enable both directions, or an object to control each side independently.
+</ParamField>
+
+<ParamField path="resizable" type="boolean" default="true">
+  Whether this panel's adjacent separator can be dragged. Set to `false` to lock a panel at its current size.
+</ParamField>
+
+<Note>
+  Panel sizes are expressed as percentages of the splitter container. When no `size` or `defaultSize` is provided, the available space is distributed evenly across all panels.
+</Note>
+
+## Examples
+
+### Basic horizontal split
+
+```vue basic-splitter.vue
+<template>
+  <a-splitter style="height: 400px; border: 1px solid #eee">
+    <a-splitter-panel :default-size="40" :min="20">
+      <div style="padding: 16px">Left panel</div>
+    </a-splitter-panel>
+    <a-splitter-panel :min="20">
+      <div style="padding: 16px">Right panel</div>
+    </a-splitter-panel>
+  </a-splitter>
+</template>
+```
+
+### Vertical split
+
+```vue vertical-splitter.vue
+<template>
+  <a-splitter orientation="vertical" style="height: 400px">
+    <a-splitter-panel :default-size="30">
+      <div style="padding: 16px">Top panel</div>
+    </a-splitter-panel>
+    <a-splitter-panel>
+      <div style="padding: 16px">Bottom panel</div>
+    </a-splitter-panel>
+  </a-splitter>
+</template>
+```
+
+### Three-panel layout with collapsible side panels
+
+```vue three-panel.vue
+<script setup lang="ts">
+function onResize(sizes: number[]) {
+  console.log('panel sizes:', sizes)
+}
+</script>
+
+<template>
+  <a-splitter style="height: 500px" @resize="onResize">
+    <a-splitter-panel
+      :default-size="20"
+      :min="10"
+      :collapsible="{ end: true }"
+    >
+      <div style="padding: 16px">Navigation</div>
+    </a-splitter-panel>
+
+    <a-splitter-panel :min="30">
+      <div style="padding: 16px">Main content</div>
+    </a-splitter-panel>
+
+    <a-splitter-panel
+      :default-size="25"
+      :min="10"
+      :collapsible="{ start: true }"
+    >
+      <div style="padding: 16px">Detail panel</div>
+    </a-splitter-panel>
+  </a-splitter>
+</template>
+```
+
+### Nested splitters
+
+```vue nested-splitter.vue
+<template>
+  <a-splitter style="height: 400px">
+    <a-splitter-panel :default-size="30">
+      <div style="padding: 16px">Sidebar</div>
+    </a-splitter-panel>
+
+    <a-splitter-panel>
+      <!-- Vertical split inside the right panel -->
+      <a-splitter orientation="vertical" style="height: 100%">
+        <a-splitter-panel :default-size="40">
+          <div style="padding: 16px">Editor</div>
+        </a-splitter-panel>
+        <a-splitter-panel>
+          <div style="padding: 16px">Terminal</div>
+        </a-splitter-panel>
+      </a-splitter>
+    </a-splitter-panel>
+  </a-splitter>
+</template>
+```
+
+<Tip>
+  Use `lazy` mode when panels contain charts, code editors, or other components that are expensive to re-render on every pixel of drag movement.
+</Tip>

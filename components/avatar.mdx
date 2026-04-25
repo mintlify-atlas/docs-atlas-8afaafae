@@ -1,0 +1,81 @@
+---
+title: "Avatar — user and entity images"
+description: "antdv-next Avatar displays a user photo, initials, or icon in circle or square shape. AvatarGroup stacks multiple avatars with an overflow count."
+---
+
+`Avatar` renders a circular or square graphic for users, teams, or entities. It supports an image `src`, icon content, or text initials that auto-scale to fit. Use `AvatarGroup` to stack multiple avatars with a configurable max count.
+
+## Basic avatar
+
+```vue
+<!-- Image -->
+<a-avatar src="https://example.com/user.jpg" />
+
+<!-- Icon -->
+<a-avatar><template #icon><user-outlined /></template></a-avatar>
+
+<!-- Text initials -->
+<a-avatar>AB</a-avatar>
+```
+
+## Avatar sizes
+
+```vue
+<a-avatar :size="64" src="..." />
+<a-avatar size="large" src="..." />
+<a-avatar size="default" src="..." />
+<a-avatar size="small" src="..." />
+```
+
+## Avatar group
+
+```vue
+<a-avatar-group :max-count="3" max-style="{ color: '#f56a00', backgroundColor: '#fde3cf' }">
+  <a-avatar src="..." />
+  <a-avatar src="..." />
+  <a-avatar src="..." />
+  <a-avatar src="..." />
+</a-avatar-group>
+```
+
+## Props
+
+<ParamField path="src" type="string">
+  Image URL. Falls back to icon or text if the image fails to load.
+</ParamField>
+
+<ParamField path="shape" type="'circle' | 'square'">
+  Avatar shape. Defaults to `'circle'`.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'default' | 'small' | number">
+  Avatar size in pixels or preset name.
+</ParamField>
+
+<ParamField path="gap" type="number">
+  Padding between the text and the avatar edge for text avatars.
+</ParamField>
+
+<ParamField path="draggable" type="boolean">
+  Whether the image is draggable. Defaults to `false`.
+</ParamField>
+
+## AvatarGroup Props
+
+<ParamField path="maxCount" type="number">
+  Maximum avatars to show before collapsing into a `+N` overflow bubble.
+</ParamField>
+
+<ParamField path="maxStyle" type="CSSProperties">
+  CSS styles applied to the overflow count bubble.
+</ParamField>
+
+<ParamField path="maxPopoverPlacement" type="'top' | 'bottom'">
+  Placement of the popover that shows overflow avatars.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `error` | — | Fires when the image fails to load |

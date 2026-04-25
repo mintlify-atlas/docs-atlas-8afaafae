@@ -1,0 +1,66 @@
+---
+title: "Tooltip — hover information popup"
+description: "antdv-next Tooltip shows a simple text popup on hover or focus. Use Popover for rich HTML content, or Popconfirm for confirmation actions."
+---
+
+`Tooltip` attaches a brief descriptive label to any element that appears on hover or focus. It's the lightest overlay component — use it for icon labels, truncated text explanations, or keyboard shortcut hints. For richer content, use `Popover`. For confirmation actions, use `Popconfirm`.
+
+## Basic tooltip
+
+```vue
+<a-tooltip title="This action cannot be undone">
+  <a-button danger>Delete</a-button>
+</a-tooltip>
+```
+
+## Placement
+
+```vue
+<a-tooltip title="Top tooltip" placement="top">
+  <a-button>Top</a-button>
+</a-tooltip>
+
+<a-tooltip title="Left tooltip" placement="left">
+  <a-button>Left</a-button>
+</a-tooltip>
+```
+
+## Props
+
+<ParamField path="title" type="string | VueNode">
+  Tooltip content. Also available as the `title` slot.
+</ParamField>
+
+<ParamField path="placement" type="string">
+  Popup placement: `'top'`, `'topLeft'`, `'topRight'`, `'bottom'`, `'bottomLeft'`, `'bottomRight'`, `'left'`, `'leftTop'`, `'leftBottom'`, `'right'`, `'rightTop'`, `'rightBottom'`. Defaults to `'top'`.
+</ParamField>
+
+<ParamField path="trigger" type="'hover' | 'focus' | 'click' | 'contextMenu'">
+  What triggers the tooltip. Defaults to `'hover'`.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  Controlled visibility via `v-model:open`.
+</ParamField>
+
+<ParamField path="color" type="string">
+  Background color of the tooltip bubble.
+</ParamField>
+
+<ParamField path="arrow" type="boolean | { pointAtCenter: boolean }">
+  Shows/hides the tooltip arrow. Defaults to `true`.
+</ParamField>
+
+<ParamField path="mouseEnterDelay" type="number">
+  Delay in seconds before showing on hover. Defaults to `0.1`.
+</ParamField>
+
+<ParamField path="mouseLeaveDelay" type="number">
+  Delay in seconds before hiding on mouse leave. Defaults to `0.1`.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `openChange` | `(open: boolean)` | Fires when visibility changes |

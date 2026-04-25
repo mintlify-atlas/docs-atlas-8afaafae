@@ -1,0 +1,94 @@
+---
+title: "Icons with @antdv-next/icons"
+description: "The @antdv-next/icons package provides all Ant Design icons as tree-shakeable Vue 3 components. Import individual icons by name to keep your bundle lean."
+---
+
+The `@antdv-next/icons` package ships every Ant Design icon as an individual Vue 3 component. Because each icon is a named export, bundlers like Vite and Rollup can eliminate the ones you do not import, keeping your production bundle as small as possible. Icons support an optional `spin` prop for animated indicators and accept a `style` attribute for inline sizing and color overrides.
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+npm install @antdv-next/icons
+```
+
+```bash yarn
+yarn add @antdv-next/icons
+```
+
+```bash pnpm
+pnpm add @antdv-next/icons
+```
+
+</CodeGroup>
+
+## Basic usage
+
+Import the icons you need by name. Each icon is available in three styles: `Outlined` (default), `Filled`, and `TwoTone`.
+
+```vue basic-icons.vue
+<script setup lang="ts">
+import {
+  HomeOutlined,
+  HomeFilled,
+  HomeTwoTone,
+  SearchOutlined,
+  SettingOutlined,
+} from '@antdv-next/icons'
+</script>
+
+<template>
+  <HomeOutlined />
+  <HomeFilled />
+  <HomeTwoTone />
+  <SearchOutlined />
+  <SettingOutlined />
+</template>
+```
+
+## Icon inside a button
+
+Pass an icon component into the `AButton` `icon` slot to create a labeled or icon-only button.
+
+```vue icon-in-button.vue
+<script setup lang="ts">
+import { SearchOutlined, PlusOutlined } from '@antdv-next/icons'
+import { AButton } from 'antdv-next'
+</script>
+
+<template>
+  <!-- Labeled button with icon -->
+  <AButton type="primary">
+    <template #icon><SearchOutlined /></template>
+    Search
+  </AButton>
+
+  <!-- Icon-only circle button -->
+  <AButton type="primary" shape="circle">
+    <template #icon><PlusOutlined /></template>
+  </AButton>
+</template>
+```
+
+## Sizing and the spin prop
+
+Icons inherit `font-size` from their parent element by default. Override size and color with inline styles. Use the `spin` prop to create a continuously rotating animation — useful for loading indicators.
+
+```vue icon-sizing-spin.vue
+<script setup lang="ts">
+import { LoadingOutlined, CheckCircleOutlined } from '@antdv-next/icons'
+</script>
+
+<template>
+  <!-- Inline size and color -->
+  <CheckCircleOutlined :style="{ fontSize: '32px', color: '#52c41a' }" />
+
+  <!-- Spinning loading icon -->
+  <LoadingOutlined :style="{ fontSize: '24px' }" spin />
+</template>
+```
+
+<Note>
+  Tree-shaking requires a bundler that supports ES module static analysis (Vite, Rollup, Webpack 5+). Avoid importing from the package root with a wildcard (`import * as Icons`) — always use named imports so unused icons are eliminated at build time.
+</Note>

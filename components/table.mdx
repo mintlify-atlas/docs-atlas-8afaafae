@@ -1,0 +1,91 @@
+---
+title: "Table — data grid with sorting, filtering, and pagination"
+description: "antdv-next Table renders data grids with sorting, filtering, pagination, and row selection. Define columns with the typed TableColumnsType and TableColumnType."
+---
+
+`Table` is the primary data grid component. Define columns with the `columns` prop and pass rows via `dataSource`. It supports column sorting and filtering out of the box, integrates with `Pagination`, handles row selection with checkboxes, and renders expandable detail rows.
+
+## Basic usage
+
+```vue
+<script setup lang="ts">
+import type { TableColumnsType } from 'antdv-next'
+
+const columns: TableColumnsType = [
+  { title: 'Name', dataIndex: 'name', key: 'name', sorter: (a, b) => a.name.localeCompare(b.name) },
+  { title: 'Age', dataIndex: 'age', key: 'age' },
+  { title: 'Email', dataIndex: 'email', key: 'email' },
+]
+
+const data = [
+  { key: '1', name: 'Alice', age: 32, email: 'alice@example.com' },
+  { key: '2', name: 'Bob', age: 28, email: 'bob@example.com' },
+]
+</script>
+
+<template>
+  <a-table :columns="columns" :data-source="data" />
+</template>
+```
+
+## Row selection
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const selectedRowKeys = ref<string[]>([])
+const rowSelection = {
+  selectedRowKeys,
+  onChange: (keys: string[]) => { selectedRowKeys.value = keys },
+}
+</script>
+
+<template>
+  <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" />
+</template>
+```
+
+## Key Props
+
+<ParamField path="dataSource" type="object[]">
+  Array of row data objects. Each row should have a unique `key` field.
+</ParamField>
+
+<ParamField path="columns" type="TableColumnsType">
+  Column definitions. Each column: `{ title, dataIndex, key, sorter, filters, render, width, fixed }`.
+</ParamField>
+
+<ParamField path="rowKey" type="string | ((record) => string)">
+  The field to use as the row's unique key. Defaults to `'key'`.
+</ParamField>
+
+<ParamField path="pagination" type="false | PaginationConfig">
+  Pagination config. Pass `false` to disable. Defaults to showing 10 rows.
+</ParamField>
+
+<ParamField path="loading" type="boolean">
+  Shows a loading overlay while data is being fetched.
+</ParamField>
+
+<ParamField path="rowSelection" type="TableRowSelection">
+  Enables checkbox row selection. Provide `selectedRowKeys` and `onChange`.
+</ParamField>
+
+<ParamField path="expandable" type="{ expandedRowRender, rowExpandable, ... }">
+  Config for expandable rows. `expandedRowRender` receives a record and returns VNode content.
+</ParamField>
+
+<ParamField path="scroll" type="{ x?: number | string, y?: number | string }">
+  Fixed header/column scroll. Set `x` for horizontal scroll or `y` for fixed header.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'middle' | 'small'">
+  Table density.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `(pagination, filters, sorter, extra)` | Fires when pagination, sort, or filter changes |
+| `resizeColumn` | `(width, column)` | Fires when a column is resized |

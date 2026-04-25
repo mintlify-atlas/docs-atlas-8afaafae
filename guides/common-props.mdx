@@ -1,0 +1,158 @@
+---
+title: "Common props across antdv-next components"
+description: "Many antdv-next components share a set of common props for semantic class names, styles, prefix, and size. Learn the patterns that apply across the library."
+---
+
+antdv-next components follow a consistent prop contract. Rather than inventing per-component APIs for common concerns like CSS class names, inline styles, size, and disabled state, the library defines a shared vocabulary that applies across almost every component. Learning these patterns once gives you reliable mental models for the entire API surface.
+
+## prefixCls
+
+Every component generates its own CSS class names from an internal prefix. By default the prefix is `ant` (producing classes like `ant-btn`, `ant-input`, etc.). You can override it per component using `prefixCls`.
+
+<ParamField path="props.prefixCls" type="string">
+  Overrides the CSS class prefix for this component instance. The component and all its child elements will use the new prefix instead of the default `ant-` prefix. Must be kept in sync with any custom CSS you provide.
+</ParamField>
+
+```vue
+<template>
+  <!-- Generates .my-btn, .my-btn-primary, etc. -->
+  <a-button prefix-cls="my-btn" type="primary">Custom prefix</a-button>
+</template>
+```
+
+<Note>
+  Changing `prefixCls` also requires you to provide matching CSS for the new class names, since the built-in styles are generated for the default prefix. This prop is intended for advanced use cases such as embedding antdv-next inside a host application that already uses `ant-` class names.
+</Note>
+
+## rootClass
+
+React's Ant Design exposes a `rootClassName` prop to set a class on the outermost element of a component. In antdv-next, this prop is renamed to `rootClass` to match Vue naming conventions.
+
+<ParamField path="props.rootClass" type="string">
+  Adds one or more CSS class names to the root element of the component. Equivalent to React's `rootClassName`. Merged with any `class` attribute passed through attrs.
+</ParamField>
+
+```vue
+<template>
+  <a-modal root-class="checkout-modal" :open="open">
+    <p>Order summary</p>
+  </a-modal>
+</template>
+```
+
+<Note>
+  `attrs.class` is always merged onto the root element in addition to `rootClass`. Both are applied — `rootClass` is for programmatic control, while `attrs.class` carries the class you write directly on the component tag in a template.
+</Note>
+
+## classes
+
+The `classes` prop is the Vue equivalent of Ant Design React's `classNames` prop. It accepts an object where each key targets a named sub-element (a "slot") within the component's DOM structure, letting you apply class names to internal elements without resorting to deep CSS selectors.
+
+<ParamField path="props.classes" type="object">
+  Object of CSS class names keyed by semantic slot names. Which keys are accepted varies by component — consult the individual component's API table. Equivalent to React's `classNames` prop.
+</ParamField>
+
+```vue
+<script lang="ts" setup>
+const modalClasses = {
+  header: 'border-b border-gray-200',
+  body: 'p-6 bg-gray-50',
+  footer: 'flex justify-end gap-2',
+}
+</script>
+
+<template>
+  <a-modal :classes="modalClasses" :open="open">
+    <p>Content</p>
+  </a-modal>
+</template>
+```
+
+## styles
+
+The `styles` prop mirrors the structure of `classes` but accepts `CSSProperties` objects instead of class name strings. Use it to apply inline styles to specific sub-elements.
+
+<ParamField path="props.styles" type="object">
+  Object of `CSSProperties` values keyed by semantic slot names. Allows inline style application to internal sub-elements without CSS selectors. The available keys match those of the `classes` prop for the same component.
+</ParamField>
+
+```vue
+<script lang="ts" setup>
+const drawerStyles = {
+  header: { background: '#fafafa', borderBottom: '1px solid #e8e8e8' },
+  body: { padding: '24px' },
+  mask: { backdropFilter: 'blur(4px)' },
+}
+</script>
+
+<template>
+  <a-drawer :styles="drawerStyles" :open="open" title="Settings">
+    <p>Drawer content</p>
+  </a-drawer>
+</template>
+```
+
+## size
+
+Many form and interactive components accept a `size` prop that controls visual density.
+
+<ParamField path="props.size" type="'small' | 'default' | 'large'">
+  Controls the visual size of the component. `'small'` produces compact inputs and buttons, `'large'` produces taller ones. Defaults to `'default'`. Can be set globally for all components via `ConfigProvider`.
+</ParamField>
+
+Setting size globally via `ConfigProvider` is the recommended approach for consistent density across a whole form or page section:
+
+```vue
+<template>
+  <!-- All child components inherit size="large" -->
+  <a-config-provider size="large">
+    <a-form>
+      <a-form-item label="Name">
+        <a-input placeholder="Full name" />
+      </a-form-item>
+      <a-form-item label="Date">
+        <a-date-picker />
+      </a-form-item>
+      <a-button type="primary">Submit</a-button>
+    </a-form>
+  </a-config-provider>
+</template>
+```
+
+A local `size` prop on a component overrides the `ConfigProvider` value for that instance only.
+
+## disabled
+
+The `disabled` prop disables interaction on a component. Like `size`, it can be set both locally and globally.
+
+<ParamField path="props.disabled" type="boolean" default="false">
+  Prevents user interaction with the component when `true`. Equivalent to the HTML `disabled` attribute for native elements. Can be inherited from a `ConfigProvider` `DisabledContext` wrapping ancestor.
+</ParamField>
+
+```vue
+<template>
+  <!-- Disable an entire section of a form -->
+  <a-config-provider :disabled="isReadOnly">
+    <a-input v-model:value="name" />
+    <a-select v-model:value="role" :options="roleOptions" />
+    <a-button type="primary">Save</a-button>
+  </a-config-provider>
+</template>
+```
+
+## attrs: class and style passthrough
+
+In antdv-next, `class` and `style` are **not** declared as props. Instead, they are received through Vue's fallthrough attributes (`attrs`) and always merged onto the root element of the component. This means you can always add classes or inline styles directly on the component tag, just as you would on a native HTML element.
+
+```vue
+<template>
+  <!-- class and style flow through attrs and land on the root element -->
+  <a-button class="mt-4 w-full" :style="{ fontWeight: 700 }" type="primary">
+    Submit
+  </a-button>
+</template>
+```
+
+<Tip>
+  Attrs are merged last, so `attrs.class` always takes precedence over internally generated class names. This ensures your customisations are never accidentally overridden by the library.
+</Tip>

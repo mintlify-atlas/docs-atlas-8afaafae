@@ -1,0 +1,100 @@
+---
+title: "Tree — hierarchical data display"
+description: "antdv-next Tree renders nested data with expand/collapse, checkbox selection, drag-and-drop reordering, virtual scrolling, and a DirectoryTree variant."
+---
+
+`Tree` visualizes hierarchical data. Pass `treeData` as a nested array and control expansion and selection with `expandedKeys` and `checkedKeys`/`selectedKeys`. Use `DirectoryTree` for file-explorer-style visuals. Both variants support virtual scrolling for large datasets.
+
+## Basic tree
+
+```vue
+<script setup lang="ts">
+import type { TreeDataNode } from 'antdv-next'
+
+const treeData: TreeDataNode[] = [
+  {
+    title: 'Parent 1',
+    key: '0-0',
+    children: [
+      { title: 'Child 1-1', key: '0-0-0' },
+      { title: 'Child 1-2', key: '0-0-1' },
+    ],
+  },
+  { title: 'Parent 2', key: '0-1' },
+]
+</script>
+
+<template>
+  <a-tree :tree-data="treeData" />
+</template>
+```
+
+## Checkable tree
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const checkedKeys = ref<string[]>([])
+</script>
+
+<template>
+  <a-tree
+    v-model:checked-keys="checkedKeys"
+    :tree-data="treeData"
+    checkable
+  />
+</template>
+```
+
+## Directory tree
+
+```vue
+<a-directory-tree :tree-data="treeData" default-expand-all />
+```
+
+## Key Props
+
+<ParamField path="treeData" type="TreeDataNode[]">
+  Nested data array. Each node: `{ key, title, children?, disabled?, isLeaf?, checkable? }`.
+</ParamField>
+
+<ParamField path="checkedKeys" type="string[]">
+  Controlled checked keys via `v-model:checked-keys`. Requires `checkable`.
+</ParamField>
+
+<ParamField path="selectedKeys" type="string[]">
+  Controlled selected keys via `v-model:selected-keys`.
+</ParamField>
+
+<ParamField path="expandedKeys" type="string[]">
+  Controlled expanded keys via `v-model:expanded-keys`.
+</ParamField>
+
+<ParamField path="checkable" type="boolean">
+  Enables checkbox mode for multi-selection.
+</ParamField>
+
+<ParamField path="selectable" type="boolean">
+  Enables node selection on click. Defaults to `true`.
+</ParamField>
+
+<ParamField path="defaultExpandAll" type="boolean">
+  Expands all nodes on mount.
+</ParamField>
+
+<ParamField path="draggable" type="boolean">
+  Enables drag-and-drop node reordering.
+</ParamField>
+
+<ParamField path="virtual" type="boolean">
+  Uses virtual scrolling for large trees. Defaults to `true`.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `select` | `(selectedKeys, { selected, node })` | Node selected |
+| `check` | `(checkedKeys, { checked, node })` | Node checked |
+| `expand` | `(expandedKeys, { expanded, node })` | Node expanded/collapsed |
+| `drop` | `({ node, dragNode, dropPosition })` | Drag-and-drop completed |

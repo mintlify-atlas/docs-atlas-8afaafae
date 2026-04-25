@@ -1,0 +1,165 @@
+---
+title: "Tabs — tabbed content panels"
+description: "antdv-next Tabs supports card, line, and editable-card types with top/bottom/left/right positions, lazy loading, closable tabs, and scroll navigation."
+---
+
+The `Tabs` component organises related content into switchable panels, reducing visual clutter and keeping users focused on one section at a time. It supports three visual styles (`line`, `card`, and `editable-card`), four placement positions, animated transitions, and lazy or eager content rendering. Tabs can be populated via the `items` array prop or by composing `TabPane` children.
+
+## Tabs props
+
+<ParamField path="activeKey" type="string">
+  Controlled key of the currently active tab. Use `v-model:activeKey` for two-way binding.
+</ParamField>
+
+<ParamField path="defaultActiveKey" type="string">
+  Initially active tab key for uncontrolled usage.
+</ParamField>
+
+<ParamField path="type" type="'line' | 'card' | 'editable-card'" default="'line'">
+  Visual style. `line` renders underline tabs, `card` renders boxed tabs, and `editable-card` adds add/close controls.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'middle' | 'small'">
+  Tab size. Inherits from `ConfigProvider` when unset.
+</ParamField>
+
+<ParamField path="tabPosition" type="'top' | 'right' | 'bottom' | 'left'" default="'top'">
+  Position of the tab bar relative to the content panels.
+</ParamField>
+
+<ParamField path="tabBarGutter" type="number">
+  Gap in pixels between adjacent tab labels.
+</ParamField>
+
+<ParamField path="animated" type="boolean | { inkBar: boolean, tabPane: boolean }">
+  Enable or disable the ink-bar and tab-pane transition animations.
+</ParamField>
+
+<ParamField path="destroyOnHidden" type="boolean" default="false">
+  Unmount inactive tab pane DOM when hidden. Useful for large panes that should not retain state. Previously named `destroyInactiveTabPane` (now deprecated).
+</ParamField>
+
+<ParamField path="centered" type="boolean" default="false">
+  Center the tab labels within the tab bar.
+</ParamField>
+
+<ParamField path="hideAdd" type="boolean" default="false">
+  Hide the add button in `editable-card` mode.
+</ParamField>
+
+<ParamField path="items" type="Tab[]">
+  Data-driven tab definitions. Each `Tab` entry maps to one tab label and its associated pane content.
+</ParamField>
+
+<ParamField path="rootClass" type="string">
+  Additional CSS class on the root element.
+</ParamField>
+
+## Tab item shape
+
+| Field | Type | Description |
+|---|---|---|
+| `key` | `string` | Unique identifier for the tab. |
+| `label` | `VueNode` | Label displayed in the tab bar. |
+| `content` | `VueNode` | Content rendered in the tab pane. |
+| `icon` | `VueNode` | Icon shown before the label. |
+| `closable` | `boolean` | Show a close button (editable-card only). |
+| `disabled` | `boolean` | Disable the tab so it cannot be selected. |
+| `destroyOnHidden` | `boolean` | Per-tab override for `destroyOnHidden`. |
+
+## TabPane props
+
+`TabPane` is available as `Tabs.TabPane` for slot-based composition.
+
+<ParamField path="key" type="string" required>
+  Unique key matching `activeKey`.
+</ParamField>
+
+<ParamField path="tab" type="VueNode">
+  Tab label. Also accepts a `#tab` slot on the `TabPane`.
+</ParamField>
+
+<ParamField path="closable" type="boolean" default="true">
+  Whether a close button is rendered in `editable-card` mode.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Prevent the tab from being selected.
+</ParamField>
+
+<ParamField path="destroyInactiveTabPane" type="boolean" deprecated>
+  Deprecated. Use `destroyOnHidden` instead.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `change` | `(activeKey: string)` | Fired when the active tab changes. |
+| `edit` | `(key: string \| MouseEvent, action: 'add' \| 'remove')` | Fired when a tab is added or removed in `editable-card` mode. |
+| `tabClick` | `(activeKey: string, event: MouseEvent)` | Fired on every click of a tab label, even the already-active one. |
+| `tabScroll` | `(info: { direction: 'left' \| 'right' \| 'top' \| 'bottom' })` | Fired when the tab bar scrolls. |
+| `update:activeKey` | `(activeKey: string)` | v-model binding for the active key. |
+
+## Examples
+
+<CodeGroup>
+
+```vue basic-tabs.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ATabs } from 'antdv-next'
+
+const activeKey = ref('1')
+
+const items = [
+  { key: '1', label: 'Overview', content: 'Overview panel content.' },
+  { key: '2', label: 'Analytics', content: 'Analytics panel content.' },
+  { key: '3', label: 'Settings', content: 'Settings panel content.', disabled: true },
+]
+</script>
+
+<template>
+  <ATabs v-model:activeKey="activeKey" :items="items" />
+</template>
+```
+
+```vue card-tabs.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ATabs } from 'antdv-next'
+import type { Tab } from 'antdv-next'
+
+const activeKey = ref('1')
+
+const tabs = ref<Tab[]>([
+  { key: '1', label: 'Tab 1', content: 'Content for tab 1.' },
+  { key: '2', label: 'Tab 2', content: 'Content for tab 2.' },
+])
+
+function onEdit(key: string | MouseEvent, action: 'add' | 'remove') {
+  if (action === 'add') {
+    const newKey = String(Date.now())
+    tabs.value.push({ key: newKey, label: `New Tab`, content: 'New tab content.' })
+    activeKey.value = newKey
+  } else {
+    tabs.value = tabs.value.filter(t => t.key !== key)
+  }
+}
+</script>
+
+<template>
+  <ATabs
+    v-model:activeKey="activeKey"
+    type="editable-card"
+    :items="tabs"
+    @edit="onEdit"
+  />
+</template>
+```
+
+</CodeGroup>
+
+<Tip>
+  For left- or right-positioned tabs, set `tabPosition="left"` or `tabPosition="right"`. These render the tab bar vertically alongside the content pane.
+</Tip>

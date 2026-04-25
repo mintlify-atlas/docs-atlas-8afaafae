@@ -1,0 +1,56 @@
+---
+title: "Message — transient toast notifications"
+description: "antdv-next message shows brief toast notifications at the top of the screen. Use useMessage() to display success, error, warning, info, and loading messages."
+---
+
+`message` provides lightweight, auto-dismissing toast notifications displayed at the top of the viewport. Use the `useMessage()` composable so messages inherit your `ConfigProvider` theme and locale. The composable returns a message API and a context holder node that must be rendered in your component tree.
+
+## Usage with useMessage
+
+```vue
+<script setup lang="ts">
+import { useMessage } from 'antdv-next'
+
+const [messageApi, contextHolder] = useMessage()
+
+async function handleSave() {
+  messageApi.loading('Saving...', 0) // 0 = don't auto-close
+  await saveData()
+  messageApi.destroy()
+  messageApi.success('Saved successfully!')
+}
+</script>
+
+<template>
+  <component :is="contextHolder" />
+  <a-button @click="handleSave">Save</a-button>
+</template>
+```
+
+## API methods
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `success` | `(content, duration?, onClose?)` | Green success toast |
+| `error` | `(content, duration?, onClose?)` | Red error toast |
+| `info` | `(content, duration?, onClose?)` | Blue info toast |
+| `warning` | `(content, duration?, onClose?)` | Yellow warning toast |
+| `loading` | `(content, duration?, onClose?)` | Spinner toast |
+| `open` | `(config: MessageConfig)` | Full config object |
+| `destroy` | `(key?)` | Dismiss one or all messages |
+
+## MessageConfig object
+
+```typescript
+messageApi.open({
+  type: 'success',
+  content: 'Profile updated',
+  duration: 3,        // seconds, 0 = persist until destroyed
+  key: 'update',      // deduplicate/update by key
+  onClose: () => {},
+})
+```
+
+<Note>
+  Always use `useMessage()` rather than the static `message.success()` import when your app uses `ConfigProvider` for theming or locale. Static methods create a new Vue root outside the provider context.
+</Note>

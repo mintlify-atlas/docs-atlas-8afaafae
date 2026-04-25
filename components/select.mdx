@@ -1,0 +1,104 @@
+---
+title: "Select — dropdown option picker"
+description: "antdv-next Select supports single and multiple selection, search filtering, virtual scroll for large lists, option groups, tags mode, and remote data loading."
+---
+
+`Select` is the primary dropdown component in antdv-next. It handles single selection, multi-select with tags, server-side search, and large option lists via virtual scrolling. Use the `options` prop for the simplest setup, or compose with `SelectOption` and `SelectOptGroup` for more control.
+
+## Basic usage
+
+```vue App.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const value = ref<string>()
+const options = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Banana', value: 'banana' },
+  { label: 'Cherry', value: 'cherry' },
+]
+</script>
+
+<template>
+  <a-select v-model:value="value" :options="options" placeholder="Select a fruit" style="width: 200px" />
+</template>
+```
+
+## Multiple selection
+
+```vue
+<a-select v-model:value="selected" mode="multiple" :options="options" placeholder="Select multiple" />
+```
+
+## Props
+
+<ParamField path="value" type="string | number | (string | number)[]">
+  Bound value via `v-model:value`. Array for `multiple` and `tags` modes.
+</ParamField>
+
+<ParamField path="options" type="{ label, value, disabled? }[]">
+  Option list. Preferred over slot-based `SelectOption` for performance.
+</ParamField>
+
+<ParamField path="mode" type="'multiple' | 'tags' | undefined">
+  Enables multi-select. `tags` allows creating new values not in the list.
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder shown when no value is selected.
+</ParamField>
+
+<ParamField path="allowClear" type="boolean">
+  Shows a clear button when a value is selected.
+</ParamField>
+
+<ParamField path="showSearch" type="boolean">
+  Enables filtering options by typing. Defaults to `true` in single mode.
+</ParamField>
+
+<ParamField path="filterOption" type="boolean | ((input, option) => boolean)">
+  Controls option filtering. Pass `false` to disable, or a function for custom logic.
+</ParamField>
+
+<ParamField path="loading" type="boolean">
+  Shows a spinner in the dropdown while data loads.
+</ParamField>
+
+<ParamField path="virtual" type="boolean">
+  Enables virtual scrolling for large lists. Defaults to `true`.
+</ParamField>
+
+<ParamField path="maxTagCount" type="number | 'responsive'">
+  Maximum tags to show in `multiple` mode before collapsing to a count.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the select.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'middle' | 'small'">
+  Control size.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `(value, option)` | Fires when selection changes |
+| `search` | `(value: string)` | Fires when search input changes |
+| `select` | `(value, option)` | Fires when an option is selected |
+| `deselect` | `(value, option)` | Fires when an option is deselected (multi mode) |
+| `dropdownVisibleChange` | `(open: boolean)` | Fires when dropdown opens/closes |
+
+## Option groups
+
+```vue
+<a-select v-model:value="value" style="width: 200px">
+  <a-select-opt-group label="Fruits">
+    <a-select-option value="apple">Apple</a-select-option>
+    <a-select-option value="banana">Banana</a-select-option>
+  </a-select-opt-group>
+  <a-select-opt-group label="Vegetables">
+    <a-select-option value="carrot">Carrot</a-select-option>
+  </a-select-opt-group>
+</a-select>
+```

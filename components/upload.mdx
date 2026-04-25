@@ -1,0 +1,101 @@
+---
+title: "Upload — file selection and drag-and-drop"
+description: "antdv-next Upload handles file selection, drag-and-drop via UploadDragger, image previews, progress tracking, and custom backends via the customRequest prop."
+---
+
+`Upload` provides a flexible file upload UI that works with any backend. Control which files are accepted with `accept`, intercept before upload with `beforeUpload`, handle progress via the `onChange` emit, and swap the HTTP layer entirely with `customRequest`. Use `UploadDragger` for a drop-zone style interface.
+
+## Basic upload
+
+```vue
+<script setup lang="ts">
+import type { UploadProps } from 'antdv-next'
+const handleChange: UploadProps['onChange'] = (info) => {
+  if (info.file.status === 'done') {
+    console.log('Uploaded:', info.file.name)
+  }
+}
+</script>
+
+<template>
+  <a-upload action="/api/upload" @change="handleChange">
+    <a-button>Select File</a-button>
+  </a-upload>
+</template>
+```
+
+## Drag and drop
+
+```vue
+<a-upload-dragger action="/api/upload" :multiple="true" @change="handleChange">
+  <p>Click or drag files here to upload</p>
+</a-upload-dragger>
+```
+
+## Image gallery
+
+```vue
+<a-upload
+  v-model:file-list="fileList"
+  action="/api/upload"
+  list-type="picture-card"
+  @preview="handlePreview"
+>
+  <div v-if="fileList.length < 8">+ Upload</div>
+</a-upload>
+```
+
+## Props
+
+<ParamField path="fileList" type="UploadFile[]">
+  Controlled file list via `v-model:file-list`.
+</ParamField>
+
+<ParamField path="action" type="string | ((file: File) => Promise<string>)">
+  Upload URL. Can be a function returning a Promise for dynamic URLs.
+</ParamField>
+
+<ParamField path="method" type="string">
+  HTTP method. Defaults to `'post'`.
+</ParamField>
+
+<ParamField path="headers" type="object">
+  Additional request headers.
+</ParamField>
+
+<ParamField path="accept" type="string">
+  Accepted file types (MIME types or extensions), e.g. `'image/*,.pdf'`.
+</ParamField>
+
+<ParamField path="multiple" type="boolean">
+  Allow selecting multiple files at once.
+</ParamField>
+
+<ParamField path="listType" type="'text' | 'picture' | 'picture-card' | 'picture-circle'">
+  How to display the file list. Defaults to `'text'`.
+</ParamField>
+
+<ParamField path="maxCount" type="number">
+  Maximum number of files. New files replace old when `maxCount=1`.
+</ParamField>
+
+<ParamField path="beforeUpload" type="(file, fileList) => boolean | Promise">
+  Called before upload starts. Return `false` or a rejected Promise to cancel.
+</ParamField>
+
+<ParamField path="customRequest" type="(options: RcCustomRequestOptions) => void">
+  Replaces the built-in XMLHttpRequest upload with your own implementation.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the upload trigger.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `{ file, fileList, event }` | Fires at every stage: uploading, done, error, removed |
+| `remove` | `(file: UploadFile)` | Fires when a file is removed from the list |
+| `preview` | `(file: UploadFile)` | Fires when a file thumbnail is clicked |
+| `drop` | `DragEvent` | Fires when files are dropped on `UploadDragger` |

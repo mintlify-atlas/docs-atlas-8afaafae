@@ -1,0 +1,69 @@
+---
+title: "Image — preview and gallery"
+description: "antdv-next Image adds click-to-preview with zoom and rotate controls plus fallback src. ImagePreviewGroup creates a navigable gallery across multiple images."
+---
+
+`Image` wraps an `<img>` element with a built-in preview lightbox. Click an image to open it in full-screen with zoom and rotate controls. Use `ImagePreviewGroup` to link multiple images into a gallery where users can navigate between them.
+
+## Basic image with preview
+
+```vue
+<a-image
+  :width="200"
+  src="https://example.com/photo.jpg"
+  fallback="https://example.com/placeholder.jpg"
+/>
+```
+
+## Disable preview
+
+```vue
+<a-image :width="200" src="..." :preview="false" />
+```
+
+## Image gallery
+
+```vue
+<a-image-preview-group>
+  <a-image :width="200" src="https://example.com/photo1.jpg" />
+  <a-image :width="200" src="https://example.com/photo2.jpg" />
+  <a-image :width="200" src="https://example.com/photo3.jpg" />
+</a-image-preview-group>
+```
+
+## Props
+
+<ParamField path="src" type="string">
+  Image source URL.
+</ParamField>
+
+<ParamField path="alt" type="string">
+  Alt text for accessibility.
+</ParamField>
+
+<ParamField path="width" type="number | string">
+  Image width.
+</ParamField>
+
+<ParamField path="height" type="number | string">
+  Image height.
+</ParamField>
+
+<ParamField path="fallback" type="string">
+  Fallback image URL shown if `src` fails to load.
+</ParamField>
+
+<ParamField path="preview" type="boolean | PreviewConfig">
+  Enables click-to-preview. Pass `false` to disable, or a config object for custom preview behavior.
+</ParamField>
+
+<ParamField path="placeholder" type="boolean | VueNode">
+  Placeholder shown while the image loads. Pass `true` for a default blur placeholder.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `error` | `Event` | Fires when the image fails to load |
+| `load` | `Event` | Fires when the image loads successfully |

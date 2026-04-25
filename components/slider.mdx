@@ -1,0 +1,90 @@
+---
+title: "Slider — range input control"
+description: "antdv-next Slider supports single value and range selection, vertical orientation, custom step and marks, tooltip formatting, and disabled segments."
+---
+
+`Slider` lets users select a numeric value or a range by dragging a handle along a track. Use `range` mode to bind two handles for min/max selection. Add `marks` for labeled tick positions, and customize the tooltip with `tooltip.formatter`.
+
+## Basic usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const value = ref(30)
+</script>
+
+<template>
+  <a-slider v-model:value="value" />
+</template>
+```
+
+## Range slider
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const range = ref<[number, number]>([20, 70])
+</script>
+
+<template>
+  <a-slider v-model:value="range" range />
+</template>
+```
+
+## With marks
+
+```vue
+<a-slider
+  v-model:value="value"
+  :marks="{ 0: '0°C', 26: '26°C', 37: '37°C', 100: { label: '100°C', style: { color: 'red' } } }"
+/>
+```
+
+## Props
+
+<ParamField path="value" type="number | [number, number]">
+  Bound value via `v-model:value`. Array when `range` is `true`.
+</ParamField>
+
+<ParamField path="min" type="number">
+  Minimum value. Defaults to `0`.
+</ParamField>
+
+<ParamField path="max" type="number">
+  Maximum value. Defaults to `100`.
+</ParamField>
+
+<ParamField path="step" type="number | null">
+  Step between values. Pass `null` to allow only mark positions.
+</ParamField>
+
+<ParamField path="range" type="boolean">
+  Enables two-handle range selection.
+</ParamField>
+
+<ParamField path="vertical" type="boolean">
+  Renders the slider vertically.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the slider.
+</ParamField>
+
+<ParamField path="marks" type="Record<number, string | { label, style }>">
+  Labeled tick marks at specific values.
+</ParamField>
+
+<ParamField path="dots" type="boolean">
+  Shows dots at each step position.
+</ParamField>
+
+<ParamField path="tooltip" type="{ formatter?, open?, placement?, getPopupContainer? }">
+  Controls the tooltip above the handle. Set `formatter: null` to hide it.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `number \| [number, number]` | Fires continuously while dragging |
+| `afterChange` | `number \| [number, number]` | Fires once when drag ends |

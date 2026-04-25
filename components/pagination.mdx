@@ -1,0 +1,140 @@
+---
+title: "Pagination — page navigation control"
+description: "antdv-next Pagination renders a fully accessible page selector with size changer, quick jumper, total count display, and responsive small mode."
+---
+
+The `Pagination` component renders a row of page buttons that lets users navigate through large datasets. It supports a size changer dropdown for selecting items per page, a quick-jumper input for jumping to any page directly, a customisable total count label, and a responsive small mode that activates automatically on narrow viewports. Two-way binding is available via `v-model:current` and `v-model:pageSize`.
+
+## Props
+
+<ParamField path="current" type="number">
+  Controlled current page number (1-based). Use `v-model:current` for two-way binding.
+</ParamField>
+
+<ParamField path="defaultCurrent" type="number" default="1">
+  Initial page number for uncontrolled usage.
+</ParamField>
+
+<ParamField path="total" type="number" required>
+  Total number of items. Used to compute the total number of pages.
+</ParamField>
+
+<ParamField path="pageSize" type="number">
+  Controlled number of items per page. Use `v-model:pageSize` for two-way binding.
+</ParamField>
+
+<ParamField path="defaultPageSize" type="number" default="10">
+  Initial page size for uncontrolled usage.
+</ParamField>
+
+<ParamField path="showSizeChanger" type="boolean | SelectProps" default="false">
+  Show a dropdown to change the page size. Automatically enabled when `total` exceeds `totalBoundaryShowSizeChanger`. Pass a `SelectProps` object to customise the dropdown.
+</ParamField>
+
+<ParamField path="pageSizeOptions" type="(string | number)[]" default="[10, 20, 50, 100]">
+  Available page size options in the size changer dropdown.
+</ParamField>
+
+<ParamField path="showQuickJumper" type="boolean | { goButton?: VueNode }" default="false">
+  Show a text input that lets users jump directly to a page number.
+</ParamField>
+
+<ParamField path="showTotal" type="(total: number, range: [number, number]) => VueNode">
+  Render function for a total count label. Also available as the `#showTotal` slot with `{ total, range }` context.
+</ParamField>
+
+<ParamField path="size" type="'default' | 'small'">
+  Compact `small` size. Also triggered automatically when `responsive` is enabled on `xs` screens.
+</ParamField>
+
+<ParamField path="simple" type="boolean" default="false">
+  Render a simplified pagination with only previous/next buttons and a current-page input.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Disable all pagination controls.
+</ParamField>
+
+<ParamField path="responsive" type="boolean" default="false">
+  Automatically switch to small mode on `xs` viewports.
+</ParamField>
+
+<ParamField path="totalBoundaryShowSizeChanger" type="number" default="50">
+  When `total` exceeds this threshold, the size changer is displayed automatically even if `showSizeChanger` is not explicitly set.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'center' | 'end'">
+  Horizontal alignment of the pagination within its container.
+</ParamField>
+
+<ParamField path="rootClass" type="string">
+  Additional CSS class on the root element.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `change` | `(page: number, pageSize: number)` | Fired whenever the current page or page size changes. |
+| `showSizeChange` | `(current: number, size: number)` | Fired when the page size is changed via the size changer dropdown. |
+| `update:current` | `(page: number)` | v-model binding for the current page. |
+| `update:pageSize` | `(size: number)` | v-model binding for the page size. |
+
+## Slots
+
+| Slot | Context | Description |
+|---|---|---|
+| `#showTotal` | `{ total: number, range: [number, number] }` | Custom total count label. |
+| `#itemRender` | `{ page: number, type: 'page' \| 'prev' \| 'next' \| 'jump-prev' \| 'jump-next', element: VueNode }` | Custom renderer for each pagination item. |
+| `#prevIcon` | — | Replace the previous page icon. |
+| `#nextIcon` | — | Replace the next page icon. |
+| `#jumpPrevIcon` | — | Replace the jump-backward ellipsis icon. |
+| `#jumpNextIcon` | — | Replace the jump-forward ellipsis icon. |
+
+## Examples
+
+<CodeGroup>
+
+```vue basic-pagination.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { APagination } from 'antdv-next'
+
+const current = ref(1)
+</script>
+
+<template>
+  <APagination
+    v-model:current="current"
+    :total="500"
+    show-size-changer
+    show-quick-jumper
+    :show-total="(total, range) => `${range[0]}–${range[1]} of ${total} items`"
+  />
+</template>
+```
+
+```vue simple-pagination.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { APagination } from 'antdv-next'
+
+const current = ref(3)
+const pageSize = ref(20)
+</script>
+
+<template>
+  <APagination
+    v-model:current="current"
+    v-model:pageSize="pageSize"
+    :total="200"
+    simple
+  />
+</template>
+```
+
+</CodeGroup>
+
+<Tip>
+  Set `responsive` to automatically downscale to small mode on mobile viewports without any breakpoint logic in your application code.
+</Tip>

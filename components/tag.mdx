@@ -1,0 +1,72 @@
+---
+title: "Tag — labeled category markers"
+description: "antdv-next Tag renders closable, colorful labels for categorization. CheckableTag and CheckableTagGroup support toggle selection without a form binding."
+---
+
+`Tag` displays a small label, typically used for categories, status badges, or metadata. Built-in colors from the Ant Design palette are available by name, or you can pass any hex/CSS color. Tags can be closable with an `×` icon. Use `CheckableTag` for toggleable filter chips.
+
+## Basic tags
+
+```vue
+<a-tag>Default</a-tag>
+<a-tag color="blue">Blue</a-tag>
+<a-tag color="green">Success</a-tag>
+<a-tag color="#f50">Custom</a-tag>
+```
+
+## Closable tag
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const visible = ref(true)
+</script>
+
+<template>
+  <a-tag v-if="visible" closable @close="visible = false">Removable</a-tag>
+</template>
+```
+
+## CheckableTag
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const active = ref(false)
+</script>
+
+<template>
+  <a-checkable-tag v-model:checked="active">Filter</a-checkable-tag>
+</template>
+```
+
+## Props
+
+<ParamField path="color" type="string">
+  Tag color. Accepts Ant Design preset names (`'blue'`, `'green'`, `'red'`, `'orange'`, `'purple'`, etc.) or any CSS color.
+</ParamField>
+
+<ParamField path="closable" type="boolean">
+  Shows a close icon. Fires the `close` emit when clicked.
+</ParamField>
+
+<ParamField path="bordered" type="boolean">
+  Shows a border. Defaults to `true`.
+</ParamField>
+
+<ParamField path="icon" type="VueNode">
+  Icon rendered before the tag text.
+</ParamField>
+
+## CheckableTag Props
+
+<ParamField path="checked" type="boolean">
+  Bound toggle state via `v-model:checked`.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `close` | `MouseEvent` | Fires when the close icon is clicked |
+| `change` | `(checked: boolean)` | CheckableTag — fires when toggled |

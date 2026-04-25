@@ -1,0 +1,114 @@
+---
+title: "Divider — horizontal and vertical separators"
+description: "The antdv-next Divider component renders a horizontal or vertical rule with optional text label, dashed style, and orientation control."
+---
+
+`Divider` renders a semantic `<div role="separator">` that visually separates content either horizontally (the default) or vertically. When given a default slot, it splits its rule into two rails flanking a centered text label, which can be shifted to the start or end of the line. The dashed and dotted variants are available for lighter visual weight. Vertical dividers are inline elements useful for separating items in a toolbar or navigation row.
+
+## Props
+
+<ParamField path="type" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Deprecated — use `orientation` or `vertical`. Sets the orientation of the divider.
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'">
+  Layout orientation. `'horizontal'` renders a full-width rule; `'vertical'` renders an inline rule.
+</ParamField>
+
+<ParamField path="vertical" type="boolean">
+  Shorthand for `orientation="vertical"`. Overrides `orientation` when provided.
+</ParamField>
+
+<ParamField path="titlePlacement" type="'left' | 'center' | 'right' | 'start' | 'end'" default="'center'">
+  Position of the text label relative to the rule. `'left'` and `'right'` map to `'start'` and `'end'` in RTL mode automatically.
+</ParamField>
+
+<ParamField path="orientationMargin" type="string | number">
+  Deprecated — use `styles.content.margin`. Distance from the divider edge to the text label when `titlePlacement` is `'start'` or `'end'`. A plain number is interpreted as pixels.
+</ParamField>
+
+<ParamField path="dashed" type="boolean" default="false">
+  Render the rule as a dashed line. Equivalent to `variant="dashed"`.
+</ParamField>
+
+<ParamField path="variant" type="'solid' | 'dashed' | 'dotted'" default="'solid'">
+  Line style of the rule. Available since Ant Design 5.20.0.
+</ParamField>
+
+<ParamField path="plain" type="boolean" default="false">
+  Render the text label in plain body weight rather than bold heading weight.
+</ParamField>
+
+<ParamField path="size" type="'small' | 'middle' | 'large'">
+  Controls the vertical margin of the divider via size tokens.
+</ParamField>
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Optional label text rendered inside the rule. Triggers the split-rail layout. |
+
+## Examples
+
+### Horizontal divider
+
+```vue horizontal-divider.vue
+<template>
+  <div>
+    <p>Section A content</p>
+    <a-divider />
+    <p>Section B content</p>
+  </div>
+</template>
+```
+
+### Divider with text label
+
+```vue label-divider.vue
+<template>
+  <div>
+    <p>Above the divider</p>
+    <a-divider>OR</a-divider>
+    <p>Below the divider</p>
+  </div>
+</template>
+```
+
+### Title placement
+
+```vue placement-divider.vue
+<template>
+  <a-divider title-placement="start">Section start</a-divider>
+  <a-divider title-placement="center">Section center</a-divider>
+  <a-divider title-placement="end">Section end</a-divider>
+</template>
+```
+
+### Dashed and dotted variants
+
+```vue variant-divider.vue
+<template>
+  <a-divider dashed>Dashed</a-divider>
+  <a-divider variant="dotted">Dotted</a-divider>
+  <a-divider plain>Plain text weight</a-divider>
+</template>
+```
+
+### Vertical divider
+
+```vue vertical-divider.vue
+<template>
+  <div>
+    <a href="#">Link</a>
+    <a-divider vertical />
+    <a href="#">Edit</a>
+    <a-divider vertical />
+    <a href="#">Delete</a>
+  </div>
+</template>
+```
+
+<Note>
+  The text label inside the default slot only renders above a horizontal divider. Vertical dividers ignore the default slot entirely.
+</Note>

@@ -1,0 +1,102 @@
+---
+title: "DatePicker, RangePicker, and time pickers"
+description: "antdv-next DatePicker covers single date, date range, week, month, quarter, and year pickers built on dayjs with locale, format, and disabledDate support."
+---
+
+antdv-next ships a full suite of date and time selection components built on [dayjs](https://day.js.org/): `DatePicker`, `DateRangePicker`, `DateWeekPicker`, `DateMonthPicker`, `DateQuarterPicker`, `DateYearPicker`, `TimePicker`, and `TimeRangePicker`. All support `v-model:value`, locale via `ConfigProvider`, and custom date formatting.
+
+## Basic DatePicker
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { Dayjs } from 'dayjs'
+const date = ref<Dayjs>()
+</script>
+
+<template>
+  <a-date-picker v-model:value="date" />
+</template>
+```
+
+## Date Range
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { Dayjs } from 'dayjs'
+const range = ref<[Dayjs, Dayjs]>()
+</script>
+
+<template>
+  <a-date-range-picker v-model:value="range" />
+</template>
+```
+
+## With time selection
+
+```vue
+<a-date-picker v-model:value="date" show-time format="YYYY-MM-DD HH:mm:ss" />
+```
+
+## DatePicker Props
+
+<ParamField path="value" type="Dayjs | null">
+  Bound value via `v-model:value`. Uses dayjs objects.
+</ParamField>
+
+<ParamField path="format" type="string | string[]">
+  Display format string (dayjs format). Defaults to `'YYYY-MM-DD'`.
+</ParamField>
+
+<ParamField path="picker" type="'date' | 'week' | 'month' | 'quarter' | 'year'">
+  Which granularity to pick. Use the dedicated components instead for clarity.
+</ParamField>
+
+<ParamField path="showTime" type="boolean | TimePickerProps">
+  Enables time selection. Pass a config object to control time format.
+</ParamField>
+
+<ParamField path="disabledDate" type="(current: Dayjs) => boolean">
+  Function returning `true` for dates that should be disabled.
+</ParamField>
+
+<ParamField path="locale" type="object">
+  Per-picker locale. Prefer using `ConfigProvider` locale globally.
+</ParamField>
+
+<ParamField path="allowClear" type="boolean">
+  Shows a clear button. Defaults to `true`.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the picker.
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder text.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'middle' | 'small'">
+  Input size.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `(value, dateString)` | Fires when the selected date changes |
+| `ok` | `(value)` | Fires when confirm button is clicked (with `showTime`) |
+| `panelChange` | `(value, mode)` | Fires when the panel view changes |
+
+## TimePicker
+
+```vue
+<a-time-picker v-model:value="time" format="HH:mm:ss" />
+```
+
+`TimePicker` accepts the same common props. Use `TimeRangePicker` for a time range selection.
+
+<Note>
+  antdv-next date components use dayjs internally. Ensure dayjs and its required plugins (`advancedFormat`, `customParseFormat`, `localeData`, `weekday`, `weekOfYear`, `weekYear`) are loaded before use.
+</Note>

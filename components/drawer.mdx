@@ -1,0 +1,71 @@
+---
+title: "Drawer — slide-in panel overlay"
+description: "antdv-next Drawer slides a panel in from any viewport edge. Use it for navigation menus, settings forms, or detail views that keep the user in context."
+---
+
+`Drawer` is a panel that slides in from the top, right, bottom, or left edge of the screen. It's commonly used for navigation menus on mobile, settings forms, or record detail views. Control visibility with `v-model:open` and close with the built-in close button or a mask click.
+
+## Basic drawer
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const open = ref(false)
+</script>
+
+<template>
+  <a-button @click="open = true">Open Drawer</a-button>
+  <a-drawer v-model:open="open" title="Settings" placement="right" :width="400">
+    <p>Drawer content goes here.</p>
+  </a-drawer>
+</template>
+```
+
+## Props
+
+<ParamField path="open" type="boolean">
+  Controls visibility via `v-model:open`.
+</ParamField>
+
+<ParamField path="title" type="string | VueNode">
+  Drawer header title.
+</ParamField>
+
+<ParamField path="placement" type="'top' | 'right' | 'bottom' | 'left'">
+  Which edge the drawer slides in from. Defaults to `'right'`.
+</ParamField>
+
+<ParamField path="width" type="number | string">
+  Width for left/right drawers. Defaults to `378`.
+</ParamField>
+
+<ParamField path="height" type="number | string">
+  Height for top/bottom drawers.
+</ParamField>
+
+<ParamField path="closable" type="boolean">
+  Shows the close (×) button. Defaults to `true`.
+</ParamField>
+
+<ParamField path="maskClosable" type="boolean">
+  Closes the drawer when clicking the backdrop. Defaults to `true`.
+</ParamField>
+
+<ParamField path="destroyOnClose" type="boolean">
+  Unmounts child components when the drawer closes. Defaults to `false`.
+</ParamField>
+
+<ParamField path="footer" type="VueNode">
+  Content rendered in the drawer footer.
+</ParamField>
+
+<ParamField path="extra" type="VueNode">
+  Extra content in the header (top-right area).
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `close` | `MouseEvent` | Fires when the drawer is closed |
+| `afterOpenChange` | `(open: boolean)` | Fires after the animation completes |

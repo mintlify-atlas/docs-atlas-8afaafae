@@ -1,0 +1,56 @@
+---
+title: "List — rendered item collections"
+description: "antdv-next does not ship a dedicated List component. Use Table with minimal columns, or compose Card and Space for list-style layouts."
+---
+
+antdv-next does not include a standalone `List` component. The navigation entry links here for discoverability, but list-style UIs are best composed from existing components depending on your data structure.
+
+## Recommended patterns
+
+<CardGroup cols={2}>
+  <Card title="Simple data rows" icon="table" href="/components/table">
+    Use `Table` with a single column and `showHeader={false}` for a basic data list.
+  </Card>
+  <Card title="Card grid" icon="grid-2" href="/components/card">
+    Use `Card` + `CardGrid` for a visual grid of items.
+  </Card>
+</CardGroup>
+
+## Data list with Table
+
+```vue
+<script setup lang="ts">
+const items = [
+  { key: '1', name: 'Item one', description: 'First description' },
+  { key: '2', name: 'Item two', description: 'Second description' },
+]
+const columns = [
+  { dataIndex: 'name', key: 'name' },
+  { dataIndex: 'description', key: 'description' },
+]
+</script>
+
+<template>
+  <a-table
+    :columns="columns"
+    :data-source="items"
+    :show-header="false"
+    :pagination="false"
+  />
+</template>
+```
+
+## Item list with Space
+
+```vue
+<a-space direction="vertical" style="width: 100%">
+  <a-card v-for="item in items" :key="item.key" size="small">
+    <strong>{{ item.name }}</strong>
+    <p>{{ item.description }}</p>
+  </a-card>
+</a-space>
+```
+
+<Note>
+  A dedicated `List` component with `List.Item` and `List.Item.Meta` (as in Ant Design React) is planned for a future release. Check the [GitHub repository](https://github.com/antdv-next/antdv-next) for progress.
+</Note>

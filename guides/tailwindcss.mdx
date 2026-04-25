@@ -1,0 +1,150 @@
+---
+title: "Use Tailwind CSS alongside antdv-next"
+description: "Combine antdv-next components with Tailwind CSS utility classes in the same project. Configure preflight, prefix, and content paths to avoid style conflicts."
+---
+
+antdv-next uses a CSS-in-JS runtime (`@antdv-next/cssinjs`) to generate scoped styles at runtime, while Tailwind CSS generates a static utility stylesheet at build time. The two systems can coexist in the same project, but a small amount of configuration is needed to prevent style conflicts and to wire Tailwind's theme into antdv-next's design token system. The `@antdv-next/tailwind` package does this automatically.
+
+## Wrap your app with a-app
+
+Before configuring Tailwind, make sure your app entry wraps everything with `<a-app>`. This gives the antdv-next runtime a parent style container that scopes its CSS-in-JS correctly.
+
+```vue App.vue
+<template>
+  <a-app>
+    <router-view />
+  </a-app>
+</template>
+```
+
+## Install Tailwind CSS and the antdv-next plugin
+
+<Steps>
+  <Step title="Install Tailwind CSS">
+    Follow the [Tailwind CSS installation guide](https://tailwindcss.com/docs/installation) for your build tool. For a Vite project:
+
+    ```bash
+    pnpm add -D tailwindcss @tailwindcss/vite
+    ```
+  </Step>
+
+  <Step title="Install the antdv-next Tailwind plugin">
+    ```bash
+    pnpm add -D @antdv-next/tailwind
+    ```
+
+    The plugin maps Ant Design CSS variables into Tailwind's theme, so utilities like `bg-primary`, `text-h1`, and `shadow-card` track the antdv-next runtime theme rather than fixed build-time values.
+  </Step>
+</Steps>
+
+## Configure Tailwind to avoid conflicts
+
+The main source of conflict between Tailwind and antdv-next is Tailwind's **preflight** stylesheet, which applies aggressive CSS resets. antdv-next includes its own `reset.css` that is designed to coexist with its CSS-in-JS output. You should disable Tailwind preflight and use `reset.css` instead.
+
+### Tailwind CSS v4 (recommended)
+
+Import the Tailwind base and the antdv-next theme file in your CSS entry. The theme file bridges Ant Design CSS variables into Tailwind's `@theme` system.
+
+```css src/index.css
+@import "tailwindcss";
+@import "@antdv-next/tailwind/theme.css";
+```
+
+If you need a custom CSS variable prefix, generate the theme CSS dynamically:
+
+```ts
+import { generateThemeCSS } from '@antdv-next/tailwind/v4'
+
+// Default prefix (ant)
+const css = generateThemeCSS()
+
+// Custom prefix
+const customCss = generateThemeCSS({ antPrefix: 'my-app' })
+```
+
+### Tailwind CSS v3
+
+Use the plugin form in `tailwind.config.ts`:
+
+```ts tailwind.config.ts
+import antdPlugin from '@antdv-next/tailwind'
+
+export default {
+  content: ['./src/**/*.{vue,js,ts,jsx,tsx}'],
+  corePlugins: {
+    // Disable preflight to avoid conflicts with antdv-next's reset.css
+    preflight: false,
+  },
+  plugins: [antdPlugin],
+}
+```
+
+For a custom Ant Design CSS variable prefix:
+
+```ts tailwind.config.ts
+import { createAntdPlugin } from '@antdv-next/tailwind'
+
+export default {
+  content: ['./src/**/*.{vue,js,ts,jsx,tsx}'],
+  corePlugins: {
+    preflight: false,
+  },
+  plugins: [
+    createAntdPlugin({ antPrefix: 'ant' }),
+  ],
+}
+```
+
+Also import the antdv-next reset in your application entry instead of relying on Tailwind preflight:
+
+```ts main.ts
+import 'antdv-next/dist/reset.css'
+```
+
+## Using Tailwind classes on antdv-next components
+
+Because `class` and `style` fall through attrs onto the root element, you can apply Tailwind utility classes directly on any antdv-next component tag:
+
+```vue
+<template>
+  <a-button class="mt-4 w-full" type="primary">Submit</a-button>
+
+  <a-card class="rounded-lg shadow-card p-lg">
+    <h2 class="text-h1 text-primary">Dashboard</h2>
+    <p class="text-text-secondary mt-sm">Your activity at a glance.</p>
+  </a-card>
+</template>
+```
+
+With `@antdv-next/tailwind` installed, the following utility groups are available and track the antdv-next theme at runtime:
+
+| Group | Examples |
+| --- | --- |
+| Colors | `bg-primary`, `text-primary`, `border-primary` |
+| Status colors | `bg-success`, `bg-warning`, `bg-error` |
+| Palette | `bg-blue-1`, `text-red-6` |
+| Spacing | `p-lg`, `px-md`, `py-sm`, `m-md`, `mt-sm` |
+| Border radius | `rounded-xs`, `rounded-lg` |
+| Typography | `text-sm`, `text-lg`, `text-h1` |
+| Shadows | `shadow-card`, `shadow-sec`, `shadow-ter` |
+
+## UnoCSS alternative
+
+If you prefer [UnoCSS](https://unocss.dev), it also works alongside antdv-next. UnoCSS generates utility CSS on demand and has no preflight conflict out of the box. See the UnoCSS guide for setup details.
+
+## Avoiding specificity conflicts
+
+antdv-next's CSS-in-JS output generates styles at runtime and inserts them into `<style>` tags, which gives them a higher specificity than Tailwind's static utilities in some situations.
+
+<Tip>
+  Enable Tailwind's `important` option to add `!important` to all utilities. This ensures your utility classes always win over antdv-next's generated styles.
+
+  ```ts tailwind.config.ts
+  export default {
+    important: true,
+    // rest of config
+  }
+  ```
+
+  In Tailwind v4, use the `important` variant on individual utilities (`!bg-red-500`) or set `@layer utilities { * { ... } }` as needed.
+</Tip>

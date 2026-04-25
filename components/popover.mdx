@@ -1,0 +1,62 @@
+---
+title: "Popover — rich content popup"
+description: "antdv-next Popover shows a popup with a title and rich HTML body content on trigger. Use it for help panels, action menus, and detail previews."
+---
+
+`Popover` is like `Tooltip` but supports a structured title and arbitrary HTML body content. Use it for help text with formatting, mini-forms, or action menus that appear near a trigger element.
+
+## Basic popover
+
+```vue
+<a-popover title="Quick Help" placement="right">
+  <template #content>
+    <p>This field accepts a valid email address.</p>
+    <a href="/guides/common-props">Learn more</a>
+  </template>
+  <a-button>?</a-button>
+</a-popover>
+```
+
+## Click-triggered popover
+
+```vue
+<a-popover trigger="click" title="Actions">
+  <template #content>
+    <a-button block>Edit</a-button>
+    <a-button block danger>Delete</a-button>
+  </template>
+  <a-button>More</a-button>
+</a-popover>
+```
+
+## Props
+
+<ParamField path="title" type="string | VueNode">
+  Popover header. Also available as the `title` slot.
+</ParamField>
+
+<ParamField path="content" type="string | VueNode">
+  Popover body. Use the `content` slot for Vue nodes.
+</ParamField>
+
+<ParamField path="placement" type="string">
+  Popup placement — same options as `Tooltip`. Defaults to `'top'`.
+</ParamField>
+
+<ParamField path="trigger" type="'hover' | 'focus' | 'click' | 'contextMenu'">
+  What opens the popover. Defaults to `'hover'`.
+</ParamField>
+
+<ParamField path="open" type="boolean">
+  Controlled visibility via `v-model:open`.
+</ParamField>
+
+<ParamField path="overlayStyle" type="CSSProperties">
+  CSS styles applied to the popup container.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `openChange` | `(open: boolean)` | Fires when visibility changes |

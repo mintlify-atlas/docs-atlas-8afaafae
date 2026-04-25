@@ -1,0 +1,65 @@
+---
+title: "Badge — notification count and status dot"
+description: "antdv-next Badge overlays a count or status dot on any element. BadgeRibbon adds a corner ribbon label to Card or other container components."
+---
+
+`Badge` wraps any element and overlays a count bubble or a status dot in the corner. It's commonly used on icons and avatars to indicate unread items. Use `BadgeRibbon` to place a decorative corner ribbon on a `Card`.
+
+## Count badge
+
+```vue
+<a-badge :count="5">
+  <a-button>Inbox</a-button>
+</a-badge>
+```
+
+## Status dot
+
+```vue
+<a-badge status="success" text="Online" />
+<a-badge status="error" text="Offline" />
+<a-badge status="warning" text="Degraded" />
+<a-badge status="processing" text="Syncing" />
+```
+
+## Ribbon
+
+```vue
+<a-badge-ribbon text="New" color="blue">
+  <a-card title="Feature">Card content</a-card>
+</a-badge-ribbon>
+```
+
+## Props
+
+<ParamField path="count" type="number | VueNode">
+  Number to display. Hides when `0` unless `showZero` is set.
+</ParamField>
+
+<ParamField path="overflowCount" type="number">
+  Max count shown before displaying `99+`. Defaults to `99`.
+</ParamField>
+
+<ParamField path="showZero" type="boolean">
+  Shows the badge even when count is `0`.
+</ParamField>
+
+<ParamField path="dot" type="boolean">
+  Shows a small dot without a count number.
+</ParamField>
+
+<ParamField path="offset" type="[number, number]">
+  Offset the badge position `[x, y]` from its default corner.
+</ParamField>
+
+<ParamField path="status" type="'success' | 'processing' | 'default' | 'error' | 'warning'">
+  Renders a standalone colored dot with the `text` label (no wrapping needed).
+</ParamField>
+
+<ParamField path="text" type="string | VueNode">
+  Label shown next to the status dot.
+</ParamField>
+
+<ParamField path="color" type="string">
+  Custom dot/count background color.
+</ParamField>

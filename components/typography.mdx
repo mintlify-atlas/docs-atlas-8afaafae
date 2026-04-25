@@ -1,0 +1,222 @@
+---
+title: "Typography — Title, Text, Paragraph, Link"
+description: "antdv-next Typography components provide semantic text elements with decorations, copyable text, inline editing, and ellipsis overflow support."
+---
+
+The antdv-next Typography suite provides four semantic text components — `ATypographyTitle`, `ATypographyText`, `ATypographyParagraph`, and `ATypographyLink` — that mirror Ant Design's Typography API adapted for Vue 3. All four share a common `BlockProps` base that covers text decorations, type tokens, copyable content with configurable tooltips, inline editing, and ellipsis overflow with optional expand and collapse controls.
+
+## Components overview
+
+<Columns cols={2}>
+  <Card title="ATypographyTitle" icon="heading">
+    Renders a semantic heading (`h1`–`h5`) controlled by the `level` prop. Supports all shared decorations except `strong`.
+  </Card>
+  <Card title="ATypographyText" icon="type">
+    Renders an inline `<span>`. Supports copyable, editable, and a restricted ellipsis (no `expandable` or `rows`).
+  </Card>
+  <Card title="ATypographyParagraph" icon="align-left">
+    Renders a block `<div>`. Shares the full `BlockProps` surface including multi-row ellipsis with expand/collapse.
+  </Card>
+  <Card title="ATypographyLink" icon="link">
+    Renders an `<a>` element with `href`, `target`, and `rel`. Ellipsis is boolean-only; auto-sets `rel="noopener noreferrer"` for `target="_blank"`.
+  </Card>
+</Columns>
+
+## ATypographyTitle props
+
+`ATypographyTitle` extends `BlockProps` (minus `strong`) and adds a `level` prop.
+
+<ParamField body="level" type="1 | 2 | 3 | 4 | 5" default="1">
+  Determines which heading element is rendered (`h1` through `h5`). Values outside this range fall back to `h1` in production and emit a warning in development.
+</ParamField>
+
+<ParamField body="type" type="'secondary' | 'success' | 'warning' | 'danger'">
+  Applies a semantic color token to the text. Maps to the theme's secondary, success, warning, and danger color scales respectively.
+</ParamField>
+
+<ParamField body="disabled" type="boolean" default="false">
+  Renders the text in a muted, non-interactive style. Does not affect DOM semantics.
+</ParamField>
+
+<ParamField body="mark" type="boolean" default="false">
+  Wraps the content in a `<mark>` element, applying a yellow highlight background.
+</ParamField>
+
+<ParamField body="code" type="boolean" default="false">
+  Wraps the content in a `<code>` element with monospace styling.
+</ParamField>
+
+<ParamField body="underline" type="boolean" default="false">
+  Applies `text-decoration: underline` to the text.
+</ParamField>
+
+<ParamField body="delete" type="boolean" default="false">
+  Wraps the content in a `<del>` element, applying a strikethrough decoration.
+</ParamField>
+
+<ParamField body="italic" type="boolean" default="false">
+  Applies `font-style: italic` to the text.
+</ParamField>
+
+## ATypographyText props
+
+`ATypographyText` shares the full `BlockProps` surface. Its `ellipsis` prop is restricted compared to `ATypographyParagraph`.
+
+<ParamField body="type" type="'secondary' | 'success' | 'warning' | 'danger'">
+  Applies a semantic color token. Same as `ATypographyTitle`.
+</ParamField>
+
+<ParamField body="disabled" type="boolean" default="false">
+  Muted, non-interactive visual state.
+</ParamField>
+
+<ParamField body="mark" type="boolean" default="false">
+  Yellow highlight via `<mark>`.
+</ParamField>
+
+<ParamField body="code" type="boolean" default="false">
+  Monospace font via `<code>`.
+</ParamField>
+
+<ParamField body="copyable" type="boolean | CopyConfig" default="false">
+  Adds a copy icon after the text. Pass `true` to copy the rendered text, or a `CopyConfig` object to customize the copied string, icon, tooltip labels, and MIME format (`'text/plain'` or `'text/html'`).
+</ParamField>
+
+<ParamField body="editable" type="boolean | EditConfig" default="false">
+  Adds an edit icon that replaces the text with a textarea for inline editing. `EditConfig` accepts `text`, `icon`, `tooltip`, `maxLength`, `autoSize`, `triggerType` (`'icon'` or `'text'`), and lifecycle callbacks `onStart`, `onChange`, `onCancel`, `onEnd`.
+</ParamField>
+
+<ParamField body="ellipsis" type="boolean | EllipsisConfig">
+  Truncates overflowing text. For `ATypographyText`, `expandable` and `rows` are not supported — pass a boolean or a `EllipsisConfig` without those keys. Use `ATypographyParagraph` for multi-row truncation.
+</ParamField>
+
+<ParamField body="strong" type="boolean" default="false">
+  Applies `font-weight: bold` via a `<strong>` element.
+</ParamField>
+
+<ParamField body="italic" type="boolean" default="false">
+  Applies `font-style: italic`.
+</ParamField>
+
+<ParamField body="underline" type="boolean" default="false">
+  Applies `text-decoration: underline`.
+</ParamField>
+
+<ParamField body="delete" type="boolean" default="false">
+  Strikethrough via `<del>`.
+</ParamField>
+
+## Code examples
+
+### Title levels
+
+```vue typography-titles.vue
+<script setup lang="ts">
+import { ATypographyTitle } from 'antdv-next'
+</script>
+
+<template>
+  <ATypographyTitle :level="1">h1 — Page title</ATypographyTitle>
+  <ATypographyTitle :level="2">h2 — Section heading</ATypographyTitle>
+  <ATypographyTitle :level="3">h3 — Sub-section</ATypographyTitle>
+  <ATypographyTitle :level="4">h4 — Card title</ATypographyTitle>
+  <ATypographyTitle :level="5">h5 — Label</ATypographyTitle>
+</template>
+```
+
+### Text decorations
+
+```vue typography-decorations.vue
+<script setup lang="ts">
+import { ATypographyText } from 'antdv-next'
+</script>
+
+<template>
+  <ATypographyText type="secondary">Secondary</ATypographyText>
+  <ATypographyText type="success">Success</ATypographyText>
+  <ATypographyText type="warning">Warning</ATypographyText>
+  <ATypographyText type="danger">Danger</ATypographyText>
+
+  <ATypographyText strong>Bold</ATypographyText>
+  <ATypographyText italic>Italic</ATypographyText>
+  <ATypographyText underline>Underline</ATypographyText>
+  <ATypographyText delete>Strikethrough</ATypographyText>
+  <ATypographyText mark>Highlighted</ATypographyText>
+  <ATypographyText code>Inline code</ATypographyText>
+  <ATypographyText disabled>Disabled</ATypographyText>
+</template>
+```
+
+### Copyable text
+
+```vue typography-copyable.vue
+<script setup lang="ts">
+import { ATypographyParagraph, ATypographyText } from 'antdv-next'
+</script>
+
+<template>
+  <!-- Copy the rendered text -->
+  <ATypographyText copyable>Click the icon to copy this text.</ATypographyText>
+
+  <!-- Copy a custom string with custom tooltip labels -->
+  <ATypographyParagraph
+    :copyable="{
+      text: 'npm install antdv-next',
+      tooltips: ['Copy install command', 'Copied!'],
+    }"
+  >
+    Install antdv-next with your package manager.
+  </ATypographyParagraph>
+</template>
+```
+
+### Ellipsis overflow
+
+<Note>
+  `ATypographyText` does not support `rows` or `expandable` in its `ellipsis` config. Use `ATypographyParagraph` for multi-row truncation with expand and collapse controls.
+</Note>
+
+```vue typography-ellipsis.vue
+<script setup lang="ts">
+import { ATypographyParagraph, ATypographyText } from 'antdv-next'
+</script>
+
+<template>
+  <!-- Single-line ellipsis on Text -->
+  <ATypographyText ellipsis style="width: 200px; display: block;">
+    This long text will be truncated with an ellipsis at the end.
+  </ATypographyText>
+
+  <!-- Multi-row ellipsis with expand on Paragraph -->
+  <ATypographyParagraph
+    :ellipsis="{
+      rows: 3,
+      expandable: true,
+      symbol: 'more',
+    }"
+  >
+    antdv-next is a Vue 3 component library that faithfully implements the
+    Ant Design system. It provides typed props, slots, and emits for every
+    component, letting you build consistent, accessible interfaces with
+    minimal boilerplate. This paragraph will collapse to three rows.
+  </ATypographyParagraph>
+</template>
+```
+
+### Link
+
+```vue typography-link.vue
+<script setup lang="ts">
+import { ATypographyLink } from 'antdv-next'
+</script>
+
+<template>
+  <ATypographyLink href="https://antdv-next.github.io" target="_blank">
+    antdv-next documentation
+  </ATypographyLink>
+
+  <ATypographyLink href="/components/button" type="danger">
+    Danger link
+  </ATypographyLink>
+</template>
+```

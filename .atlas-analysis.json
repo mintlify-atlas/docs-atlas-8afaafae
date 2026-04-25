@@ -1,24 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "Antdv Next",
+  "projectType": "frontend",
+  "projectName": "Antdv Next",
+  "projectDescription": "A Vue 3 enterprise UI component library built on the Ant Design design system, providing 70+ high-quality, TypeScript-typed components with CSS-in-JS theming.",
   "theme": "willow",
-  "colors": {
-    "primary": "#249bf9",
-    "light": "#f64754",
-    "dark": "#66b5f9"
-  },
-  "favicon": "https://media.brand.dev/5e4c85ea-d11e-445e-9f60-9b15235ca62e.svg",
-  "navbar": {
-    "primary": {
-      "type": "github",
-      "href": "https://github.com/antdv-next/antdv-next"
-    }
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/antdv-next/antdv-next"
-    }
-  },
+  "primaryColor": "#249bf9",
+  "lightColor": "#f64754",
+  "darkColor": "#66b5f9",
   "navigation": {
     "tabs": [
       {
@@ -137,5 +124,29 @@
         ]
       }
     ]
-  }
+  },
+  "keyFeatures": [
+    "70+ high-quality Vue 3 components matching Ant Design API",
+    "Full TypeScript support with typed Props, Emits, and Slots",
+    "CSS-in-JS theming via @antdv-next/cssinjs with design tokens",
+    "Dark mode, compact mode, and custom algorithm support",
+    "Internationalization for 70+ languages out of the box",
+    "Tree-shakeable ES module build with auto-import resolver",
+    "Server-side rendering (SSR) and Nuxt.js support",
+    "Component-level token customization via ConfigProvider"
+  ],
+  "publicApiSurface": [
+    "import AntdvNext from 'antdv-next'",
+    "app.use(AntdvNext)",
+    "import { Button, Input, Table, Form, ... } from 'antdv-next'",
+    "import { theme } from 'antdv-next'",
+    "theme.defaultAlgorithm / theme.darkAlgorithm / theme.compactAlgorithm",
+    "theme.useToken()",
+    "ConfigProvider :theme=\"{ token: {...}, algorithm: ... }\"",
+    "ConfigProvider :locale=\"frFR\"",
+    "useMessage() / useModal() / useNotification()",
+    "import enUS from 'antdv-next/locale/en_US'",
+    "AntdvNextResolver() for unplugin-vue-components",
+    "StyleProvider (from @antdv-next/cssinjs)"
+  ]
 }

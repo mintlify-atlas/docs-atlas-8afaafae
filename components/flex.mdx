@@ -1,0 +1,108 @@
+---
+title: "Flex — CSS flexbox layout component"
+description: "The antdv-next Flex component is a thin wrapper around CSS flexbox, exposing justify, align, gap, wrap, direction, and flex props as typed Vue props."
+---
+
+`Flex` is a single-purpose layout primitive that renders a flex container without requiring you to write inline styles or utility classes. Every CSS flexbox concept you need — main-axis alignment, cross-axis alignment, gap, wrapping, and direction — is a first-class typed prop. `Flex` renders as a `<div>` by default but can be changed to any HTML element or Vue component via the `component` prop, making it composable into headings, sections, or custom containers.
+
+## Props
+
+<ParamField path="justify" type="string">
+  Maps to the CSS `justify-content` property. Controls how items are distributed along the main axis. Accepts any valid `justify-content` value: `'flex-start'`, `'flex-end'`, `'center'`, `'space-between'`, `'space-around'`, `'space-evenly'`, etc.
+</ParamField>
+
+<ParamField path="align" type="string">
+  Maps to the CSS `align-items` property. Controls cross-axis alignment of items. Accepts any valid `align-items` value: `'flex-start'`, `'flex-end'`, `'center'`, `'baseline'`, `'stretch'`, etc.
+</ParamField>
+
+<ParamField path="gap" type="string | number | 'small' | 'middle' | 'large'">
+  Gap between items. Preset strings (`'small'`, `'middle'`, `'large'`) use design tokens. A number is treated as pixels. Any other string is passed through as a raw CSS `gap` value.
+</ParamField>
+
+<ParamField path="wrap" type="boolean | string" default="false">
+  Maps to `flex-wrap`. Pass `true` for `'wrap'`, `false` for `'nowrap'`, or any CSS `flex-wrap` string value for precise control.
+</ParamField>
+
+<ParamField path="vertical" type="boolean" default="false">
+  When `true`, sets `flex-direction: column`, stacking children vertically. Equivalent to `direction="column"`.
+</ParamField>
+
+<ParamField path="flex" type="string | number">
+  Maps to the CSS `flex` shorthand on the container element itself, not on its children. Use this when `Flex` is itself a flex child and you need to control how it grows or shrinks.
+</ParamField>
+
+<ParamField path="component" type="string | Component" default="'div'">
+  The HTML tag or Vue component to render as the flex container.
+</ParamField>
+
+<Note>
+  `justify` and `align` accept the full set of CSS values — they are typed as `CSSProperties['justifyContent']` and `CSSProperties['alignItems']` respectively. There is no allowlist restriction.
+</Note>
+
+## Examples
+
+### Horizontal layout
+
+```vue horizontal.vue
+<template>
+  <a-flex justify="space-between" align="center">
+    <a-button>Left</a-button>
+    <span>Title</span>
+    <a-button type="primary">Right</a-button>
+  </a-flex>
+</template>
+```
+
+### Vertical layout
+
+```vue vertical.vue
+<template>
+  <a-flex vertical gap="middle">
+    <a-input placeholder="Username" />
+    <a-input placeholder="Password" type="password" />
+    <a-button type="primary" block>Log in</a-button>
+  </a-flex>
+</template>
+```
+
+### Wrapping items
+
+```vue wrap.vue
+<template>
+  <a-flex wrap gap="small">
+    <a-tag v-for="color in colors" :key="color" :color="color">
+      {{ color }}
+    </a-tag>
+  </a-flex>
+</template>
+
+<script setup lang="ts">
+const colors = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple']
+</script>
+```
+
+### Nested flex layout
+
+```vue nested.vue
+<template>
+  <a-flex gap="large">
+    <!-- Left column -->
+    <a-flex vertical style="flex: 1">
+      <h3>Column A</h3>
+      <a-button>Item 1</a-button>
+      <a-button>Item 2</a-button>
+    </a-flex>
+
+    <!-- Right column -->
+    <a-flex vertical style="flex: 2">
+      <h3>Column B</h3>
+      <a-button>Item 3</a-button>
+      <a-button>Item 4</a-button>
+    </a-flex>
+  </a-flex>
+</template>
+```
+
+<Tip>
+  For equal-width columns, use CSS `flex: 1` on each child `Flex` rather than fighting the gap between fixed pixel widths. Combine with `gap` on the parent to add spacing without extra wrappers.
+</Tip>

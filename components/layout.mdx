@@ -1,0 +1,151 @@
+---
+title: "Page layout with Layout, Header, Sider, Content, Footer"
+description: "antdv-next Layout components provide a shell for page structure with a collapsible sidebar, fixed header, scrollable content, and responsive behavior."
+---
+
+The layout family gives you a set of semantic HTML containers that can be composed into any standard application shell: top-nav + content, sidebar + content, or a combination of both. `Layout` is the root wrapper that detects whether a `LayoutSider` is present and applies the correct flex direction automatically. `LayoutHeader`, `LayoutContent`, and `LayoutFooter` are thin wrappers over `<header>`, `<main>`, and `<footer>` respectively, styled to fit inside the layout. `LayoutSider` is a fully-featured collapsible sidebar that supports controlled and uncontrolled collapse, a responsive breakpoint trigger, and a custom trigger slot.
+
+## Components
+
+| Component | HTML element | Purpose |
+|-----------|--------------|---------|
+| `Layout` | `<div>` | Root wrapper; detects sider presence |
+| `LayoutHeader` | `<header>` | Top navigation bar |
+| `LayoutContent` | `<main>` | Main scrollable area |
+| `LayoutFooter` | `<footer>` | Bottom bar |
+| `LayoutSider` | `<aside>` | Collapsible side navigation |
+
+## Layout props
+
+<ParamField path="hasSider" type="boolean">
+  Override the automatic sider detection. Set to `true` when the sider is rendered conditionally and the layout cannot detect it at mount time.
+</ParamField>
+
+## LayoutSider props
+
+<ParamField path="collapsed" type="boolean">
+  Controlled collapsed state. Use together with `v-model:collapsed` or handle the `collapse` emit yourself.
+</ParamField>
+
+<ParamField path="defaultCollapsed" type="boolean" default="false">
+  Initial collapsed state when used in uncontrolled mode (no `collapsed` prop).
+</ParamField>
+
+<ParamField path="collapsible" type="boolean" default="false">
+  Whether to show the built-in collapse trigger at the bottom of the sider.
+</ParamField>
+
+<ParamField path="width" type="number | string" default="200">
+  Width of the sider in its expanded state. Accepts a pixel number or any CSS length string.
+</ParamField>
+
+<ParamField path="collapsedWidth" type="number | string" default="80">
+  Width when collapsed. Set to `0` to make the sider fully hidden and reveal a floating trigger button.
+</ParamField>
+
+<ParamField path="breakpoint" type="'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'">
+  Breakpoint at which the sider collapses automatically. Uses `window.matchMedia` under the hood.
+</ParamField>
+
+<ParamField path="theme" type="'light' | 'dark'" default="'dark'">
+  Color theme for the sider background.
+</ParamField>
+
+<ParamField path="reverseArrow" type="boolean" default="false">
+  Reverse the direction of the collapse arrow icon, useful for right-side sidebars.
+</ParamField>
+
+<ParamField path="zeroWidthTriggerStyle" type="CSSProperties">
+  Extra inline styles for the floating trigger button that appears when `collapsedWidth` is `0`.
+</ParamField>
+
+## LayoutSider emits
+
+| Event | Signature | Description |
+|-------|-----------|-------------|
+| `collapse` | `(collapsed: boolean, type: 'clickTrigger' \| 'responsive') => void` | Fired when the sider's collapsed state changes, either by user click or breakpoint. |
+| `update:collapsed` | `(collapsed: boolean) => void` | Supports `v-model:collapsed`. |
+| `breakpoint` | `(broken: boolean) => void` | Fired when the viewport crosses the configured breakpoint. |
+
+## LayoutSider slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Navigation content inside the sider. |
+| `trigger` | Custom collapse trigger replacing the default arrow icon. |
+
+## `useLayoutSider` composable
+
+Import `useLayoutSider` from `antdv-next` inside any component that is a descendant of `LayoutSider` to read the current collapsed state reactively.
+
+```ts
+import { useLayoutSider } from 'antdv-next'
+
+const { siderCollapsed } = useLayoutSider()
+// siderCollapsed is a Ref<boolean>
+```
+
+<Note>
+  `useLayoutSider` reads from the nearest ancestor `LayoutSider` via Vue's provide/inject. It returns `{ siderCollapsed: ref(false) }` when called outside of a sider context.
+</Note>
+
+## Example
+
+### Sidebar layout with collapsible sider
+
+```vue sidebar-layout.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  Layout,
+  LayoutContent,
+  LayoutFooter,
+  LayoutHeader,
+  LayoutSider,
+} from 'antdv-next'
+
+const collapsed = ref(false)
+
+function onCollapse(val: boolean, type: string) {
+  console.log('sider collapsed:', val, 'via', type)
+  collapsed.value = val
+}
+</script>
+
+<template>
+  <a-layout style="min-height: 100vh">
+    <a-layout-sider
+      v-model:collapsed="collapsed"
+      :collapsible="true"
+      :breakpoint="'lg'"
+      @collapse="onCollapse"
+    >
+      <div class="logo" />
+      <a-menu theme="dark" mode="inline">
+        <a-menu-item key="1">Dashboard</a-menu-item>
+        <a-menu-item key="2">Settings</a-menu-item>
+      </a-menu>
+    </a-layout-sider>
+
+    <a-layout>
+      <a-layout-header style="background: #fff; padding: 0 16px">
+        Header
+      </a-layout-header>
+
+      <a-layout-content style="margin: 16px">
+        <div style="padding: 24px; background: #fff; min-height: 360px">
+          Main content
+        </div>
+      </a-layout-content>
+
+      <a-layout-footer style="text-align: center">
+        antdv-next © 2024
+      </a-layout-footer>
+    </a-layout>
+  </a-layout>
+</template>
+```
+
+<Tip>
+  Nest a second `Layout` inside the outer `Layout` alongside `LayoutSider` to create the right-side column that holds the header, content, and footer. The outer `Layout` will automatically apply `flex-direction: row` when it detects a sider child.
+</Tip>

@@ -1,0 +1,79 @@
+---
+title: "Timeline — chronological event list"
+description: "antdv-next Timeline renders a vertical or horizontal sequence of events with custom colors, icons, and pending states for showing process history."
+---
+
+`Timeline` displays events in chronological order along a vertical axis. Each `TimelineItem` can have a custom color, an icon dot, and pending state for the last in-progress step.
+
+## Basic timeline
+
+```vue
+<a-timeline>
+  <a-timeline-item>Create project</a-timeline-item>
+  <a-timeline-item color="green">Configure CI/CD</a-timeline-item>
+  <a-timeline-item color="red">Fix deployment issue</a-timeline-item>
+  <a-timeline-item>Go live</a-timeline-item>
+</a-timeline>
+```
+
+## With pending item
+
+```vue
+<a-timeline :pending="'Waiting for review...'">
+  <a-timeline-item>Submitted PR</a-timeline-item>
+  <a-timeline-item>Tests passed</a-timeline-item>
+</a-timeline>
+```
+
+## Using items array
+
+```vue
+<script setup lang="ts">
+const items = [
+  { color: 'green', children: 'Deployed to staging' },
+  { color: 'blue', children: 'Code review approved' },
+  { color: 'red', children: 'Build failed — fixed' },
+  { children: 'PR opened' },
+]
+</script>
+
+<template>
+  <a-timeline :items="items" />
+</template>
+```
+
+## Timeline Props
+
+<ParamField path="items" type="TimelineItemType[]">
+  Array-based API for rendering items without slot composition.
+</ParamField>
+
+<ParamField path="pending" type="boolean | string | VueNode">
+  Adds a loading spinner at the end for in-progress state.
+</ParamField>
+
+<ParamField path="pendingDot" type="VueNode">
+  Custom dot for the pending item.
+</ParamField>
+
+<ParamField path="reverse" type="boolean">
+  Reverses the order of items (newest first).
+</ParamField>
+
+<ParamField path="mode" type="'left' | 'alternate' | 'right'">
+  Alternates items left/right of the timeline axis.
+</ParamField>
+
+## TimelineItem Props
+
+<ParamField path="color" type="string">
+  Dot color. Use preset names (`'blue'`, `'red'`, `'green'`, `'gray'`) or a hex color.
+</ParamField>
+
+<ParamField path="dot" type="VueNode">
+  Custom element to replace the default dot.
+</ParamField>
+
+<ParamField path="label" type="string | VueNode">
+  Content rendered on the opposite side of the timeline axis (used in `alternate` mode).
+</ParamField>

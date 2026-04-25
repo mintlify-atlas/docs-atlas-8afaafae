@@ -1,0 +1,166 @@
+---
+title: "Menu — navigation menus and sidebars"
+description: "antdv-next Menu supports horizontal, vertical, and inline modes with sub-menus, item groups, dividers, and keyboard navigation. Full TypeScript types included."
+---
+
+The `Menu` component renders accessible navigation menus that adapt to horizontal top-bars, vertical sidebars, and collapsible inline layouts. It is built on top of `@v-c/menu` and mirrors the Ant Design API, accepting either a structured `items` array or slot-based child components such as `MenuItem`, `SubMenu`, and `MenuItemGroup`.
+
+## Props
+
+<ParamField path="mode" type="'horizontal' | 'vertical' | 'inline'" default="'vertical'">
+  Layout mode of the menu. `horizontal` places items in a row, `vertical` stacks them, and `inline` renders nested sub-menus inline rather than as popups.
+</ParamField>
+
+<ParamField path="theme" type="'light' | 'dark'" default="'light'">
+  Visual theme. Use `dark` for a dark-background sidebar or top-bar.
+</ParamField>
+
+<ParamField path="selectedKeys" type="string[]">
+  Controlled array of currently selected item keys. Pair with `update:selectedKeys` to keep state in sync.
+</ParamField>
+
+<ParamField path="defaultSelectedKeys" type="string[]">
+  Initially selected keys for uncontrolled usage.
+</ParamField>
+
+<ParamField path="openKeys" type="string[]">
+  Controlled array of currently open sub-menu keys. Pair with `update:openKeys`.
+</ParamField>
+
+<ParamField path="defaultOpenKeys" type="string[]">
+  Initially open sub-menu keys for uncontrolled usage.
+</ParamField>
+
+<ParamField path="inlineCollapsed" type="boolean">
+  Collapse an `inline` menu to icon-only width. Typically driven by a `Layout.Sider`'s collapsed state.
+</ParamField>
+
+<ParamField path="inlineIndent" type="number" default="24">
+  Pixel indent per nesting level in `inline` mode.
+</ParamField>
+
+<ParamField path="items" type="ItemType[]">
+  Data-driven API for rendering the full menu tree. Each entry is a `MenuItemType`, `SubMenuType`, `MenuItemGroupType`, or `MenuDividerType`.
+</ParamField>
+
+<ParamField path="selectable" type="boolean" default="true">
+  Whether items can be selected. Set to `false` for purely navigational menus.
+</ParamField>
+
+<ParamField path="multiple" type="boolean" default="false">
+  Allow multiple items to be selected simultaneously.
+</ParamField>
+
+<ParamField path="rootClass" type="string">
+  Additional CSS class applied to the root wrapper element.
+</ParamField>
+
+## Items array shape
+
+The `items` prop accepts an array of discriminated union types.
+
+| Shape | Discriminator | Key fields |
+|---|---|---|
+| `MenuItemType` | _(default)_ | `key`, `label`, `icon`, `disabled`, `danger`, `title` |
+| `SubMenuType` | `children` present | `key`, `label`, `icon`, `theme`, `disabled`, `children: ItemType[]` |
+| `MenuItemGroupType` | `type: 'group'` | `label`, `children: ItemType[]` |
+| `MenuDividerType` | `type: 'divider'` | `dashed` |
+
+## Slot-based sub-components
+
+When you need finer control, use the named exports as child components instead of `items`.
+
+| Component | Purpose |
+|---|---|
+| `MenuItem` | A single clickable entry. Supports `#icon`, `#title`, and `#extra` slots. |
+| `SubMenu` | A collapsible group with a trigger label. Supports `#icon` and `#title` slots. |
+| `MenuItemGroup` | A non-clickable group heading with children. |
+| `MenuDivider` | A visual separator line; accepts a `dashed` prop. |
+
+<Note>
+  The `items` array API and slot-based children are mutually exclusive. When `items` is provided it takes precedence.
+</Note>
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `click` | `MenuInfo` | Fired when any menu item is clicked. |
+| `select` | `SelectInfo` | Fired when a selectable item becomes selected. |
+| `deselect` | `SelectInfo` | Fired when a selected item is deselected (requires `multiple`). |
+| `openChange` | `string[]` | Fired when the set of open sub-menus changes. |
+| `update:selectedKeys` | `string[]` | v-model binding for selected keys. |
+| `update:openKeys` | `string[]` | v-model binding for open sub-menu keys. |
+
+## Examples
+
+### Horizontal top-bar menu
+
+```vue
+<script setup lang="ts">
+import { AMenu } from 'antdv-next'
+import type { ItemType } from 'antdv-next'
+
+const items: ItemType[] = [
+  { key: 'home', label: 'Home' },
+  { key: 'products', label: 'Products' },
+  {
+    key: 'resources',
+    label: 'Resources',
+    children: [
+      { key: 'docs', label: 'Documentation' },
+      { key: 'blog', label: 'Blog' },
+    ],
+  },
+  { key: 'contact', label: 'Contact', disabled: true },
+]
+</script>
+
+<template>
+  <AMenu mode="horizontal" :items="items" />
+</template>
+```
+
+### Inline sidebar menu with icons
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { AMenu } from 'antdv-next'
+import { HomeOutlined, SettingOutlined, UserOutlined } from '@antdv-next/icons'
+import type { ItemType } from 'antdv-next'
+
+const selectedKeys = ref<string[]>(['dashboard'])
+const openKeys = ref<string[]>(['account'])
+
+const items: ItemType[] = [
+  { key: 'dashboard', label: 'Dashboard', icon: HomeOutlined },
+  {
+    key: 'account',
+    label: 'Account',
+    icon: UserOutlined,
+    children: [
+      { key: 'profile', label: 'Profile' },
+      { key: 'billing', label: 'Billing' },
+    ],
+  },
+  { type: 'divider' },
+  { key: 'settings', label: 'Settings', icon: SettingOutlined },
+]
+</script>
+
+<template>
+  <AMenu
+    mode="inline"
+    theme="dark"
+    v-model:selectedKeys="selectedKeys"
+    v-model:openKeys="openKeys"
+    :items="items"
+    style="width: 256px"
+  />
+</template>
+```
+
+<Tip>
+  Pair `mode="inline"` with `inlineCollapsed` and a `Layout.Sider` to build a fully collapsible sidebar with smooth icon-only collapse animation.
+</Tip>

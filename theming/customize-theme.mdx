@@ -1,0 +1,243 @@
+---
+title: "Customize theme with design tokens"
+description: "Learn how to use antdv-next's design token system to customize colors, typography, and spacing globally or per-component via ConfigProvider."
+---
+
+Antdv Next uses a three-tier design token system to give you precise control over every visual aspect of your UI. **Seed Tokens** are the origin of all design intent — a small set of values like `colorPrimary` and `borderRadius` that drive everything else. The built-in algorithm derives **Map Tokens** (gradient palettes, size scales) from those seeds. Finally, **Alias Tokens** are purpose-named references — like `colorLink` — that map back to map tokens and are consumed directly by components. In most projects, adjusting seed tokens through `ConfigProvider` is all you need.
+
+## Configure theme globally
+
+Pass a `theme` object to `<a-config-provider>` to apply design tokens across your entire application. The `token` property accepts any seed or alias token. Changes take effect reactively — no page reload required.
+
+```vue
+<template>
+  <a-config-provider
+    :theme="{
+      token: {
+        colorPrimary: '#00b96b',
+        borderRadius: 2,
+        colorBgContainer: '#f6ffed',
+      },
+    }"
+  >
+    <a-space>
+      <a-button type="primary">Primary</a-button>
+      <a-button>Default</a-button>
+    </a-space>
+  </a-config-provider>
+</template>
+```
+
+<Note>
+  Replace `undefined` with an empty object `{}` when you need to conditionally disable a theme. Switching between `undefined` and an object causes Vue to unmount and remount the component tree inside `ConfigProvider`.
+</Note>
+
+## Use preset algorithms
+
+The algorithm controls how Seed Tokens are expanded into the full Map Token set. Antdv Next ships three algorithms out of the box:
+
+<AccordionGroup>
+  <Accordion title="defaultAlgorithm">
+    The standard light-mode algorithm. Applied automatically when no `algorithm` is specified.
+
+    ```vue
+    <template>
+      <a-config-provider :theme="{ algorithm: theme.defaultAlgorithm }">
+        <App />
+      </a-config-provider>
+    </template>
+
+    <script setup lang="ts">
+    import { theme } from 'antdv-next'
+    </script>
+    ```
+  </Accordion>
+  <Accordion title="darkAlgorithm">
+    Generates a dark-mode palette from the same seed tokens.
+
+    ```vue
+    <template>
+      <a-config-provider :theme="{ algorithm: theme.darkAlgorithm }">
+        <a-space>
+          <a-input placeholder="Please Input" />
+          <a-button type="primary">Submit</a-button>
+        </a-space>
+      </a-config-provider>
+    </template>
+
+    <script setup lang="ts">
+    import { theme } from 'antdv-next'
+    </script>
+    ```
+  </Accordion>
+  <Accordion title="compactAlgorithm">
+    Produces tighter spacing and smaller control heights, useful for dense dashboards.
+
+    ```vue
+    <template>
+      <a-config-provider :theme="{ algorithm: theme.compactAlgorithm }">
+        <App />
+      </a-config-provider>
+    </template>
+
+    <script setup lang="ts">
+    import { theme } from 'antdv-next'
+    </script>
+    ```
+  </Accordion>
+</AccordionGroup>
+
+Algorithms can be combined by passing an array. Each algorithm in the array is applied in sequence:
+
+```vue
+<template>
+  <a-config-provider
+    :theme="{
+      algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+    }"
+  >
+    <App />
+  </a-config-provider>
+</template>
+
+<script setup lang="ts">
+import { theme } from 'antdv-next'
+</script>
+```
+
+## Customize component tokens
+
+Each component maintains its own Component Token namespace so overrides for one component never affect another. Pass a `components` map to `ConfigProvider` where each key is a component name (PascalCase) and the value is a partial token object.
+
+By default, component tokens only override global tokens and are not re-derived from seed tokens. Set `algorithm: true` to re-run the global algorithm on top of your component override, producing a full derived palette:
+
+<CodeGroup>
+
+```vue with algorithm
+<template>
+  <a-config-provider
+    :theme="{
+      components: {
+        Button: {
+          colorPrimary: '#00b96b',
+          algorithm: true,
+        },
+        Input: {
+          colorPrimary: '#eb2f96',
+          algorithm: true,
+        },
+      },
+    }"
+  >
+    <a-space>
+      <a-input placeholder="Please Input" />
+      <a-button type="primary">Submit</a-button>
+    </a-space>
+  </a-config-provider>
+</template>
+```
+
+```vue without algorithm
+<template>
+  <a-config-provider
+    :theme="{
+      components: {
+        Button: {
+          colorPrimary: '#00b96b',
+        },
+        Input: {
+          colorPrimary: '#eb2f96',
+        },
+      },
+    }"
+  >
+    <a-space>
+      <a-input placeholder="Please Input" />
+      <a-button type="primary">Submit</a-button>
+    </a-space>
+  </a-config-provider>
+</template>
+```
+
+</CodeGroup>
+
+You can also pass a specific algorithm function (or array of functions) to `algorithm` inside a component config to override just that component's derivation logic independently of the global algorithm.
+
+## Nest theme providers
+
+`ConfigProvider` can be nested. A child provider inherits all tokens from the parent and only overrides the tokens you re-specify. This lets you apply a section-level theme without touching the rest of the page.
+
+```vue
+<template>
+  <a-config-provider
+    :theme="{
+      token: {
+        colorPrimary: '#1677ff',
+      },
+    }"
+  >
+    <a-space>
+      <a-button type="primary">Theme 1</a-button>
+
+      <a-config-provider
+        :theme="{
+          token: {
+            colorPrimary: '#00b96b',
+          },
+        }"
+      >
+        <a-button type="primary">Theme 2</a-button>
+      </a-config-provider>
+    </a-space>
+  </a-config-provider>
+</template>
+```
+
+To opt a subtree out of inheritance entirely, set `inherit: false` in the child theme object.
+
+## Access tokens in your code
+
+Use the `theme.useToken()` composable to read the fully resolved token set inside any component rendered under a `ConfigProvider`. The returned `token` ref updates reactively whenever the theme changes.
+
+```vue
+<template>
+  <div
+    :style="{
+      backgroundColor: token.colorPrimaryBg,
+      padding: token.padding + 'px',
+      borderRadius: token.borderRadius + 'px',
+      color: token.colorPrimaryText,
+      fontSize: token.fontSize + 'px',
+    }"
+  >
+    Styled with design tokens
+  </div>
+</template>
+
+<script setup lang="ts">
+import { theme } from 'antdv-next'
+
+const { token } = theme.useToken()
+</script>
+```
+
+`useToken()` also returns `theme` (the active `Theme` instance) and `hashId` (the current CSS hash class, useful when building custom styled components that need to participate in the hash scope).
+
+## Common seed tokens
+
+The following seed tokens cover the most frequent customization needs. Adjusting any of these propagates through the entire derived token tree automatically.
+
+| Token | Default | Description |
+|---|---|---|
+| `colorPrimary` | `#1677ff` | Brand / primary action color. Drives the full primary palette. |
+| `colorSuccess` | `#52c41a` | Success state color (alerts, badges, validation). |
+| `colorWarning` | `#faad14` | Warning state color. |
+| `colorError` | `#ff4d4f` | Error and destructive action color. |
+| `colorInfo` | `#1677ff` | Informational accent color. Defaults to the primary color. |
+| `borderRadius` | `6` | Base corner radius in pixels. Scales to `borderRadiusLG`, `borderRadiusSM`, etc. |
+| `fontFamily` | System font stack | UI font family for all component text. |
+| `fontSize` | `14` | Base font size in pixels. Used to derive `fontSizeLG`, `fontSizeSM`, and heading sizes. |
+
+<Note>
+  Static methods — `message.xxx`, `Modal.xxx`, and `notification.xxx` — create isolated Vue instances at render time and **do not inherit** the `ConfigProvider` theme. Use `Modal.useModal()` and the `<a-app>` component to get theme-aware modal and notification instances.
+</Note>

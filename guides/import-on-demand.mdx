@@ -1,0 +1,131 @@
+---
+title: "Import components on demand with tree shaking"
+description: "Antdv Next ships as a pure ESM package that supports tree shaking. Use named imports or the AntdvNextResolver for zero-config auto-import in Vite projects."
+---
+
+antdv-next is published as a pure ES module, which means modern bundlers like Vite and Rollup can statically analyse your imports and drop any component code you never use. You can either import components explicitly by name, configure automatic import resolution, or register components globally — all three approaches produce a lean production bundle.
+
+## Tree shaking with named imports
+
+Import only the components you need by name. Your bundler traces the import graph and excludes all other component code from the output.
+
+```ts
+import { Button, Input, DatePicker } from 'antdv-next'
+```
+
+Use the components directly in a `<script setup>` block — no additional registration step is required when using the Composition API.
+
+```vue
+<script lang="ts" setup>
+import { Button, Input } from 'antdv-next'
+import { ref } from 'vue'
+
+const username = ref('')
+</script>
+
+<template>
+  <Input v-model:value="username" placeholder="Username" />
+  <Button type="primary" @click="submit">Submit</Button>
+</template>
+```
+
+## Auto import with unplugin-vue-components
+
+[unplugin-vue-components](https://github.com/unplugin/unplugin-vue-components) scans your templates at build time and automatically imports the components it finds. antdv-next ships a resolver (`@antdv-next/auto-import-resolver`) that teaches the plugin which components belong to this library.
+
+### Installation
+
+<CodeGroup>
+
+```bash npm
+npm i @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+```bash yarn
+yarn add @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+```bash pnpm
+pnpm add @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+```bash bun
+bun add @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+</CodeGroup>
+
+### Configure Vite
+
+Add the `Components` plugin to `vite.config.ts` and register the `AntdvNextResolver`:
+
+```ts vite.config.ts
+import { defineConfig } from 'vite'
+import Vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import { AntdvNextResolver } from '@antdv-next/auto-import-resolver'
+
+export default defineConfig({
+  plugins: [
+    Vue(),
+    Components({
+      resolvers: [AntdvNextResolver()],
+    }),
+  ],
+})
+```
+
+### Using auto-imported components
+
+With the plugin configured, components become available in every template without explicit imports. The plugin writes the import statements for you in an auto-generated `components.d.ts` file.
+
+```vue
+<template>
+  <!-- No import needed — AntdvNextResolver handles it -->
+  <a-button type="primary">Click me</a-button>
+  <a-date-picker v-model:value="date" />
+  <a-input v-model:value="text" placeholder="Type here" />
+</template>
+```
+
+<Tip>
+  Commit the generated `components.d.ts` file to source control so TypeScript picks up the types without a build step.
+</Tip>
+
+## Manual global registration
+
+If you prefer explicit control, you can register individual components on your Vue application instance. This is useful in non-Vite environments or when using a CDN build.
+
+```ts main.ts
+import { createApp } from 'vue'
+import { Button, Input, DatePicker } from 'antdv-next'
+import App from './App.vue'
+
+const app = createApp(App)
+
+app.component('AButton', Button)
+app.component('AInput', Input)
+app.component('ADatePicker', DatePicker)
+
+app.mount('#app')
+```
+
+After registration, use the kebab-case form of the name you provided in any template:
+
+```vue
+<template>
+  <a-button type="primary">Submit</a-button>
+</template>
+```
+
+## CSS reset
+
+Regardless of which import strategy you choose, always import the antdv-next reset stylesheet once at your application entry point.
+
+<Note>
+  The reset stylesheet provides baseline normalisation that antdv-next styles depend on. Without it, components may render with browser-default margins, paddings, or box-sizing that conflict with the design system.
+
+  ```ts main.ts
+  import 'antdv-next/dist/reset.css'
+  ```
+</Note>

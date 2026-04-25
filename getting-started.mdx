@@ -1,0 +1,135 @@
+---
+title: "Get started with Antdv Next"
+description: "Learn how to install antdv-next, register components globally or on-demand, and render your first Vue 3 Ant Design component in under 5 minutes."
+---
+
+Antdv Next is designed to provide a good development experience from the very first step. This guide walks you through installing the package, registering components, and rendering your first component. Before starting, make sure you have a Vue 3 project set up and Node.js v20 or above installed.
+
+<Note>
+  This guide assumes intermediate knowledge of HTML, CSS, JavaScript, and the Vue 3 Composition API. If you are new to Vue, read the [official Vue documentation](https://vuejs.dev) first.
+</Note>
+
+## Steps
+
+<Steps>
+  <Step title="Install antdv-next">
+    Add `antdv-next` to your project using your preferred package manager.
+
+    <CodeGroup>
+
+    ```bash npm
+    npm install antdv-next --save
+    ```
+
+    ```bash yarn
+    yarn add antdv-next
+    ```
+
+    ```bash pnpm
+    pnpm install antdv-next --save
+    ```
+
+    ```bash bun
+    bun add antdv-next
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Register globally">
+    Import the plugin and the reset stylesheet in your application entry file. Calling `app.use(AntdvNext)` registers all `a-*` components globally, so you can use them in any template without individual imports.
+
+    ```typescript main.ts
+    import { createApp } from 'vue'
+    import AntdvNext from 'antdv-next'
+    import 'antdv-next/dist/reset.css'
+    import App from './App.vue'
+
+    const app = createApp(App)
+    app.use(AntdvNext)
+    app.mount('#app')
+    ```
+  </Step>
+
+  <Step title="Use a component">
+    Replace the contents of `App.vue` with the following code. The `a-date-picker` component is now available directly in your template without any additional import.
+
+    ```vue App.vue
+    <script setup lang="ts">
+    import { ref } from 'vue'
+
+    const value = ref()
+    </script>
+
+    <template>
+      <a-date-picker v-model:value="value" need-confirm />
+    </template>
+    ```
+
+    Start your development server and open the app in your browser — you should see the date picker rendered on the page.
+  </Step>
+
+  <Step title="Explore more components">
+    Antdv Next includes 70+ components across six categories: General, Layout, Navigation, Data Entry, Data Display, and Feedback. Browse the component documentation to find what you need, then copy the example code directly into your project.
+  </Step>
+</Steps>
+
+## Import on demand
+
+### Tree shaking
+
+`antdv-next` is a pure ESM package. Tree shaking is enabled by default, so named imports only include the code for the components you use.
+
+```typescript
+import { Button, DatePicker } from 'antdv-next'
+```
+
+No additional configuration is needed — your bundler (Vite, webpack, or Rollup) handles the rest.
+
+### Auto import with unplugin-vue-components
+
+You can configure automatic on-demand imports using [unplugin-vue-components](https://github.com/unplugin/unplugin-vue-components). Antdv Next provides a dedicated resolver: `@antdv-next/auto-import-resolver`.
+
+Install the required packages:
+
+<CodeGroup>
+
+```bash npm
+npm i @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+```bash yarn
+yarn add @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+```bash pnpm
+pnpm add @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+```bash bun
+bun add @antdv-next/auto-import-resolver unplugin-vue-components unplugin-auto-import -D
+```
+
+</CodeGroup>
+
+Then add the resolver to your Vite configuration:
+
+```typescript vite.config.ts
+import { AntdvNextResolver } from '@antdv-next/auto-import-resolver'
+import Components from 'unplugin-vue-components/vite'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    Components({
+      resolvers: [AntdvNextResolver()],
+    }),
+  ],
+})
+```
+
+With this setup, any `a-*` component used in a template is automatically imported — no manual `import` statements required.
+
+<Tip>
+  For full configuration options for `@antdv-next/auto-import-resolver`, refer to its [npm page](https://www.npmjs.com/package/@antdv-next/auto-import-resolver).
+</Tip>

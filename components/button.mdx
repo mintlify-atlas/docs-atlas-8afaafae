@@ -1,0 +1,199 @@
+---
+title: "Button component — antdv-next"
+description: "The antdv-next Button supports 5 types, 6 variants (outlined, dashed, solid, filled, text, link), 3 sizes, loading states, icons, danger and ghost modes."
+---
+
+The `AButton` component is the primary interactive element in antdv-next. It maps directly to Ant Design's Button API, adapted for Vue 3 with idiomatic Composition API patterns. You can control appearance through the `type` shorthand or compose any look precisely with the independent `color` and `variant` props introduced in v5. Loading state, icon placement, danger styling, link rendering, and block layout are all first-class features.
+
+## Basic usage
+
+```vue basic-button.vue
+<script setup lang="ts">
+import { AButton } from 'antdv-next'
+</script>
+
+<template>
+  <AButton type="primary">Primary</AButton>
+  <AButton>Default</AButton>
+  <AButton type="dashed">Dashed</AButton>
+  <AButton type="text">Text</AButton>
+  <AButton type="link">Link</AButton>
+</template>
+```
+
+## Props
+
+<ParamField body="type" type="'default' | 'primary' | 'dashed' | 'link' | 'text'" default="'default'">
+  Shorthand for a pre-set color and variant pair. `'primary'` maps to `color="primary" variant="solid"`, `'dashed'` to `color="default" variant="dashed"`, and `'link'` / `'text'` to their respective unbounded variants. When both `color` and `variant` are provided explicitly, they take precedence over `type`.
+</ParamField>
+
+<ParamField body="variant" type="'outlined' | 'dashed' | 'solid' | 'filled' | 'text' | 'link'">
+  Controls the visual style of the button border and fill. Use together with `color` for full control. Explicit `color` + `variant` always wins over the values derived from `type`.
+</ParamField>
+
+<ParamField body="color" type="'default' | 'primary' | 'danger' | string">
+  Sets the color token for the button. Accepts `'default'`, `'primary'`, `'danger'`, and any preset theme color (e.g. `'blue'`, `'red'`, `'green'`, `'orange'`). Use with `variant` to build custom combinations.
+</ParamField>
+
+<ParamField body="size" type="'small' | 'middle' | 'large'">
+  Controls button height, padding, and font size. Inherits from the nearest `ConfigProvider` or `Space.Compact` context when not set directly.
+</ParamField>
+
+<ParamField body="disabled" type="boolean" default="false">
+  Disables the button, preventing clicks and applying disabled visual styles. Inherits from `DisabledContext` when not provided as a prop.
+</ParamField>
+
+<ParamField body="loading" type="boolean | { delay?: number; icon?: RenderNodeFn }" default="false">
+  Shows a loading spinner and blocks further clicks. Pass a plain `true` to show immediately, or an object with `delay` (milliseconds) to defer the indicator. Provide a custom `icon` render function to replace the default spinner.
+</ParamField>
+
+<ParamField body="ghost" type="boolean" default="false">
+  Makes the button background transparent and inverts text and border colors. Useful when rendering over colored or image backgrounds.
+</ParamField>
+
+<ParamField body="danger" type="boolean" default="false">
+  Applies the danger color token. Equivalent to setting `color="danger"` while preserving the variant derived from `type`.
+</ParamField>
+
+<ParamField body="block" type="boolean" default="false">
+  Stretches the button to fill the full width of its container.
+</ParamField>
+
+<ParamField body="shape" type="'default' | 'circle' | 'round' | 'square'" default="'default'">
+  Controls the border-radius of the button. `'circle'` is intended for icon-only buttons. Inherits from context when not set directly.
+</ParamField>
+
+<ParamField body="icon" type="VueNode">
+  Icon node rendered inside the button, before the label by default. The `icon` slot takes priority over this prop when both are provided.
+</ParamField>
+
+<ParamField body="href" type="string">
+  When set, the button renders as an `<a>` element instead of `<button>`. Supports all standard anchor attributes via `target`.
+</ParamField>
+
+<ParamField body="htmlType" type="'button' | 'submit' | 'reset'" default="'button'">
+  Sets the native `type` attribute on the underlying `<button>` element. Only applies when `href` is not set.
+</ParamField>
+
+<ParamField body="rootClass" type="string">
+  Additional class applied to the root element. Equivalent to Ant Design React's `rootClassName`.
+</ParamField>
+
+<ParamField body="classes" type="ButtonClassNamesType">
+  An object of class names scoped to internal semantic elements: `root`, `icon`, and `content`. Accepts static strings or functions receiving the current props.
+</ParamField>
+
+<ParamField body="styles" type="ButtonStylesType">
+  An object of inline `CSSProperties` scoped to `root`, `icon`, and `content`. Accepts static style objects or functions receiving the current props.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `click` | `MouseEvent` | Fired when the button is clicked and is not disabled or in a loading state. |
+
+## Slots
+
+| Slot | Description |
+|---|---|
+| `default` | Button label content. |
+| `icon` | Custom icon node. Takes priority over the `icon` prop. |
+| `loadingIcon` | Custom loading spinner, replacing the default animated icon and the `loading.icon` prop. |
+
+## Examples
+
+### Button types
+
+<Tip>The five `type` values cover the most common design-system roles. For custom color and border combinations, use `color` + `variant` directly.</Tip>
+
+```vue button-types.vue
+<template>
+  <AButton type="primary">Primary</AButton>
+  <AButton>Default</AButton>
+  <AButton type="dashed">Dashed</AButton>
+  <AButton type="text">Text</AButton>
+  <AButton type="link">Link</AButton>
+
+  <!-- v5 color + variant API -->
+  <AButton color="primary" variant="solid">Solid</AButton>
+  <AButton color="primary" variant="outlined">Outlined</AButton>
+  <AButton color="primary" variant="filled">Filled</AButton>
+  <AButton color="primary" variant="dashed">Dashed</AButton>
+</template>
+```
+
+### Loading state
+
+```vue button-loading.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { AButton } from 'antdv-next'
+
+const loading = ref(false)
+
+function handleClick() {
+  loading.value = true
+  setTimeout(() => { loading.value = false }, 2000)
+}
+</script>
+
+<template>
+  <!-- Immediate spinner -->
+  <AButton type="primary" :loading="loading" @click="handleClick">
+    Save
+  </AButton>
+
+  <!-- Delayed spinner — only visible if still loading after 500 ms -->
+  <AButton type="primary" :loading="{ delay: 500 }" @click="handleClick">
+    Save (delayed)
+  </AButton>
+</template>
+```
+
+### Icon button
+
+```vue button-icon.vue
+<script setup lang="ts">
+import { SearchOutlined } from '@antdv-next/icons'
+import { AButton } from 'antdv-next'
+</script>
+
+<template>
+  <!-- Icon via slot (takes priority over icon prop) -->
+  <AButton type="primary">
+    <template #icon><SearchOutlined /></template>
+    Search
+  </AButton>
+
+  <!-- Circle icon-only button -->
+  <AButton type="primary" shape="circle">
+    <template #icon><SearchOutlined /></template>
+  </AButton>
+</template>
+```
+
+### Danger button
+
+```vue button-danger.vue
+<template>
+  <AButton danger>Delete</AButton>
+  <AButton type="primary" danger>Confirm delete</AButton>
+  <AButton type="dashed" danger>Dashed danger</AButton>
+  <AButton type="text" danger>Text danger</AButton>
+  <AButton type="link" danger>Link danger</AButton>
+</template>
+```
+
+### Block button
+
+```vue button-block.vue
+<template>
+  <AButton type="primary" block>Full-width primary</AButton>
+  <AButton block>Full-width default</AButton>
+</template>
+```
+
+<Note>
+  The `danger` prop is syntactic sugar — it sets `color` to `'danger'` while preserving the `variant` resolved from `type`. Providing an explicit `color` prop alongside `danger` will override `danger`.
+</Note>

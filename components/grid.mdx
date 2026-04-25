@@ -1,0 +1,165 @@
+---
+title: "Grid system — Row and Col"
+description: "antdv-next's 24-column grid system uses Row and Col components with responsive breakpoints (xs, sm, md, lg, xl, xxl) and flexible gutter spacing."
+---
+
+The grid system divides the horizontal space of a page into 24 equal columns. You compose layouts by placing `Col` components inside a `Row`, assigning each column a `span` that sums to 24. `Row` manages horizontal and vertical gutters and controls flexbox alignment; `Col` handles span, offset, ordering, and per-breakpoint overrides. Both components are fully reactive to viewport changes through the built-in responsive observer.
+
+## Row props
+
+<ParamField path="gutter" type="number | [number, number] | Partial<Record<Breakpoint, number>>" default="0">
+  Spacing between columns. A single number sets horizontal gutter only. A tuple `[horizontal, vertical]` sets both axes. An object keyed by breakpoint (e.g. `{ xs: 8, md: 16 }`) makes the gutter responsive.
+</ParamField>
+
+<ParamField path="justify" type="'start' | 'end' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | ResponsiveJustify">
+  Horizontal alignment of columns, mapped directly to `justify-content`. Accepts a plain string or a breakpoint object for responsive control.
+</ParamField>
+
+<ParamField path="align" type="'top' | 'middle' | 'bottom' | 'stretch' | ResponsiveAligns">
+  Vertical alignment of columns, mapped to `align-items`. Accepts a plain string or a breakpoint object.
+</ParamField>
+
+<ParamField path="wrap" type="boolean" default="true">
+  Whether columns wrap to a new line when they overflow the row width. Set to `false` to keep all columns on a single line.
+</ParamField>
+
+## Col props
+
+<ParamField path="span" type="number | string">
+  Number of columns to occupy (1–24). Omit to let the column grow freely.
+</ParamField>
+
+<ParamField path="offset" type="number | string">
+  Number of columns to skip on the left, creating empty space before this column.
+</ParamField>
+
+<ParamField path="push" type="number | string">
+  Move the column to the right by this many columns without affecting layout flow (uses CSS `left`).
+</ParamField>
+
+<ParamField path="pull" type="number | string">
+  Move the column to the left by this many columns (uses CSS `right`).
+</ParamField>
+
+<ParamField path="order" type="number | string">
+  Flexbox order of this column within the row.
+</ParamField>
+
+<ParamField path="flex" type="number | 'none' | 'auto' | string">
+  Shorthand for the CSS `flex` property. A number is expanded to `n n auto`; a pixel/em/rem/% value is treated as a fixed basis.
+</ParamField>
+
+<ParamField path="xs" type="number | ColSize">
+  Column configuration at the `xs` breakpoint. Pass a number to set the span, or a `ColSize` object for full control (`{ span, offset, push, pull, order, flex }`).
+</ParamField>
+
+<ParamField path="sm" type="number | ColSize">
+  Column configuration at the `sm` breakpoint.
+</ParamField>
+
+<ParamField path="md" type="number | ColSize">
+  Column configuration at the `md` breakpoint.
+</ParamField>
+
+<ParamField path="lg" type="number | ColSize">
+  Column configuration at the `lg` breakpoint.
+</ParamField>
+
+<ParamField path="xl" type="number | ColSize">
+  Column configuration at the `xl` breakpoint.
+</ParamField>
+
+<ParamField path="xxl" type="number | ColSize">
+  Column configuration at the `xxl` breakpoint.
+</ParamField>
+
+## Responsive breakpoints
+
+| Breakpoint | Token | Max-width threshold |
+|------------|-------|---------------------|
+| Extra small | `xs` | < 576 px |
+| Small | `sm` | ≥ 576 px |
+| Medium | `md` | ≥ 768 px |
+| Large | `lg` | ≥ 992 px |
+| Extra large | `xl` | ≥ 1200 px |
+| Extra extra large | `xxl` | ≥ 1600 px |
+
+<Note>
+  Breakpoint props on `Col` are resolved from the largest matching breakpoint downward, so you only need to specify the breakpoints where the layout changes.
+</Note>
+
+## Examples
+
+### Basic grid
+
+```vue basic-grid.vue
+<template>
+  <a-row>
+    <a-col :span="8">col-8</a-col>
+    <a-col :span="8">col-8</a-col>
+    <a-col :span="8">col-8</a-col>
+  </a-row>
+
+  <a-row>
+    <a-col :span="6">col-6</a-col>
+    <a-col :span="6">col-6</a-col>
+    <a-col :span="6">col-6</a-col>
+    <a-col :span="6">col-6</a-col>
+  </a-row>
+</template>
+```
+
+### Offset and push/pull
+
+```vue offset.vue
+<template>
+  <a-row>
+    <a-col :span="8">col-8</a-col>
+    <a-col :span="8" :offset="8">col-8 offset-8</a-col>
+  </a-row>
+
+  <a-row>
+    <a-col :span="18" :push="6">col-18 push-6</a-col>
+    <a-col :span="6" :pull="18">col-6 pull-18</a-col>
+  </a-row>
+</template>
+```
+
+### Gutter spacing
+
+```vue gutter.vue
+<template>
+  <!-- 16px horizontal gutter -->
+  <a-row :gutter="16">
+    <a-col :span="6"><div class="grid-content">col-6</div></a-col>
+    <a-col :span="6"><div class="grid-content">col-6</div></a-col>
+    <a-col :span="6"><div class="grid-content">col-6</div></a-col>
+    <a-col :span="6"><div class="grid-content">col-6</div></a-col>
+  </a-row>
+
+  <!-- 16px horizontal, 8px vertical gutter -->
+  <a-row :gutter="[16, 8]">
+    <a-col :span="12"><div class="grid-content">col-12</div></a-col>
+    <a-col :span="12"><div class="grid-content">col-12</div></a-col>
+    <a-col :span="12"><div class="grid-content">col-12</div></a-col>
+    <a-col :span="12"><div class="grid-content">col-12</div></a-col>
+  </a-row>
+</template>
+```
+
+### Responsive grid
+
+```vue responsive.vue
+<template>
+  <!-- Full width on mobile, half on tablet, one-third on desktop -->
+  <a-row :gutter="{ xs: 8, sm: 16, md: 24 }">
+    <a-col :xs="24" :sm="12" :md="8">col</a-col>
+    <a-col :xs="24" :sm="12" :md="8">col</a-col>
+    <a-col :xs="24" :sm="12" :md="8">col</a-col>
+  </a-row>
+</template>
+```
+
+<Tip>
+  Use the `useBreakpoint()` composable exported from `antdv-next/grid` to read the current active breakpoint map in your own components.
+</Tip>

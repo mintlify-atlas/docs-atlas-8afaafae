@@ -1,0 +1,80 @@
+---
+title: "Radio and RadioGroup"
+description: "antdv-next Radio and RadioGroup provide single-selection as traditional radios or button-style toggles. Use optionType='button' for a segmented button bar."
+---
+
+`Radio` and `RadioGroup` provide single-selection from a set of mutually exclusive options. Use `RadioGroup` with the `options` prop for the most concise API, or compose individual `Radio` components inside a group. Set `optionType="button"` for a segmented-button appearance.
+
+## Basic RadioGroup
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const value = ref('a')
+const options = [
+  { label: 'Option A', value: 'a' },
+  { label: 'Option B', value: 'b' },
+  { label: 'Option C', value: 'c', disabled: true },
+]
+</script>
+
+<template>
+  <a-radio-group v-model:value="value" :options="options" />
+</template>
+```
+
+## Button style
+
+```vue
+<a-radio-group v-model:value="size" option-type="button" button-style="solid">
+  <a-radio-button value="large">Large</a-radio-button>
+  <a-radio-button value="default">Default</a-radio-button>
+  <a-radio-button value="small">Small</a-radio-button>
+</a-radio-group>
+```
+
+## Radio Props
+
+<ParamField path="checked" type="boolean">
+  Bound checked state via `v-model:checked`.
+</ParamField>
+
+<ParamField path="value" type="any">
+  The value this radio represents within a `RadioGroup`.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables this radio.
+</ParamField>
+
+## RadioGroup Props
+
+<ParamField path="value" type="any">
+  Bound selected value via `v-model:value`.
+</ParamField>
+
+<ParamField path="options" type="string[] | { label, value, disabled? }[]">
+  List of options to render as radios.
+</ParamField>
+
+<ParamField path="optionType" type="'default' | 'button'">
+  Renders options as traditional radios or button-style toggles.
+</ParamField>
+
+<ParamField path="buttonStyle" type="'outline' | 'solid'">
+  Button fill style when `optionType="button"`. Defaults to `'outline'`.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'middle' | 'small'">
+  Size of button-style radios.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables all radios in the group.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `RadioChangeEvent` | Fires when the selected value changes |

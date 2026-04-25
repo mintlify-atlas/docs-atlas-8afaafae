@@ -1,0 +1,75 @@
+---
+title: "Notification — persistent alert messages"
+description: "antdv-next notification shows dismissible corner popups. Use useNotification() for success, error, warning, and info alerts that inherit ConfigProvider theme."
+---
+
+`notification` displays richer, manually dismissible notifications in a corner of the screen — unlike `message` toasts, they persist until the user closes them or a duration expires. Use `useNotification()` to ensure the notification inherits your `ConfigProvider` theme.
+
+## Usage with useNotification
+
+```vue
+<script setup lang="ts">
+import { useNotification } from 'antdv-next'
+
+const [api, contextHolder] = useNotification()
+
+function notify() {
+  api.success({
+    message: 'Deployment Complete',
+    description: 'Version 2.1.0 was deployed to production successfully.',
+    placement: 'topRight',
+    duration: 5,
+  })
+}
+</script>
+
+<template>
+  <component :is="contextHolder" />
+  <a-button @click="notify">Deploy</a-button>
+</template>
+```
+
+## API methods
+
+| Method | Description |
+|--------|-------------|
+| `success(config)` | Green notification with check icon |
+| `error(config)` | Red notification with error icon |
+| `info(config)` | Blue notification with info icon |
+| `warning(config)` | Yellow notification with warning icon |
+| `open(config)` | Custom notification with full config |
+| `destroy(key?)` | Close one or all notifications |
+
+## Config options
+
+<ParamField path="message" type="string | VueNode">
+  Notification title (bold text).
+</ParamField>
+
+<ParamField path="description" type="string | VueNode">
+  Body text below the title.
+</ParamField>
+
+<ParamField path="placement" type="'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight' | 'top' | 'bottom'">
+  Screen corner where the notification appears. Defaults to `'topRight'`.
+</ParamField>
+
+<ParamField path="duration" type="number">
+  Auto-close delay in seconds. Pass `0` to persist until manually closed. Defaults to `4.5`.
+</ParamField>
+
+<ParamField path="key" type="string">
+  Unique key to update or deduplicate an existing notification.
+</ParamField>
+
+<ParamField path="icon" type="VueNode">
+  Custom icon replacing the default type icon.
+</ParamField>
+
+<ParamField path="onClose" type="() => void">
+  Callback when the notification is closed.
+</ParamField>
+
+<Note>
+  Use `useNotification()` instead of the static import when your app uses `ConfigProvider`. Static calls run outside the provider context and won't inherit theme or locale.
+</Note>

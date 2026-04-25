@@ -1,0 +1,147 @@
+---
+title: "Steps — progress indicator for multi-step flows"
+description: "antdv-next Steps shows workflow progress across horizontal, vertical, and dot styles with navigation, custom icons, error states, and dynamic step content."
+---
+
+The `Steps` component visualises progress through a defined sequence of tasks, such as a checkout flow, form wizard, or onboarding sequence. It supports horizontal and vertical orientations, multiple visual types, custom icon rendering, percentage progress within the active step, and keyboard-navigable navigation mode.
+
+## Props
+
+<ParamField path="current" type="number" default="0">
+  Zero-based index of the currently active step. Use `v-model:current` for two-way binding.
+</ParamField>
+
+<ParamField path="items" type="StepItem[]">
+  Array of step definitions. See the StepItem shape table below.
+</ParamField>
+
+<ParamField path="direction" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Layout direction. Deprecated in favour of `orientation`.
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Layout orientation. When `responsive` is enabled and the viewport is `xs`, this automatically switches to `vertical`.
+</ParamField>
+
+<ParamField path="size" type="'default' | 'small'" default="'default'">
+  Compact `small` size reduces the icon and label dimensions.
+</ParamField>
+
+<ParamField path="status" type="'wait' | 'process' | 'finish' | 'error'" default="'process'">
+  Status applied to the current step. Individual items can override this with their own `status` field.
+</ParamField>
+
+<ParamField path="type" type="'default' | 'navigation' | 'inline' | 'dot' | 'panel'" default="'default'">
+  Visual type. `navigation` renders clickable breadcrumb-style steps, `dot` replaces icons with small dots, and `inline` compresses steps into a compact bar.
+</ParamField>
+
+<ParamField path="progressDot" type="boolean | ProgressDotRender" deprecated>
+  Deprecated. Use `type="dot"` and `iconRender` instead.
+</ParamField>
+
+<ParamField path="percent" type="number">
+  Progress percentage shown inside the active step icon (0–100). Only applies when the step is in `process` status.
+</ParamField>
+
+<ParamField path="responsive" type="boolean" default="true">
+  Automatically switch to `vertical` orientation on small viewports.
+</ParamField>
+
+<ParamField path="initial" type="number" default="0">
+  Starting step number for display (shifts the rendered step numbers).
+</ParamField>
+
+## StepItem shape
+
+| Field | Type | Description |
+|---|---|---|
+| `title` | `VueNode` | Primary label for the step. |
+| `subTitle` | `VueNode` | Secondary label shown alongside the title. |
+| `content` | `VueNode` | Description text below the title. (Replaces deprecated `description`.) |
+| `icon` | `VueNode` | Custom icon replacing the default step number or dot. |
+| `status` | `'wait' \| 'process' \| 'finish' \| 'error'` | Per-step status override. |
+| `disabled` | `boolean` | Prevent the step from being clicked in navigation type. |
+| `onClick` | `(e: MouseEvent) => void` | Click handler for the step. |
+
+## Emits
+
+| Event | Payload | Description |
+|---|---|---|
+| `update:current` | `(current: number)` | Fired when the user clicks a step in navigation or panel type. Use `v-model:current` to bind. |
+
+<Note>
+  The `onChange` prop (passed directly to the underlying `@v-c/steps`) is also supported but prefer the `update:current` emit for idiomatic Vue usage.
+</Note>
+
+## Examples
+
+<CodeGroup>
+
+```vue basic-steps.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ASteps } from 'antdv-next'
+
+const current = ref(1)
+
+const items = [
+  { title: 'Account', content: 'Create your account credentials.' },
+  { title: 'Profile', content: 'Fill in your personal details.' },
+  { title: 'Confirm', content: 'Review and confirm your information.' },
+]
+</script>
+
+<template>
+  <ASteps v-model:current="current" :items="items" />
+</template>
+```
+
+```vue vertical-steps.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ASteps } from 'antdv-next'
+
+const current = ref(0)
+
+const items = [
+  { title: 'Draft', content: 'Prepare your document.' },
+  { title: 'Review', content: 'Submit for team review.' },
+  { title: 'Publish', content: 'Make it live.' },
+  { title: 'Archive', status: 'error', content: 'Automatic archival failed.' },
+]
+</script>
+
+<template>
+  <ASteps
+    v-model:current="current"
+    orientation="vertical"
+    :items="items"
+  />
+</template>
+```
+
+```vue dot-steps.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ASteps } from 'antdv-next'
+
+const current = ref(2)
+
+const items = [
+  { title: 'Step 1' },
+  { title: 'Step 2' },
+  { title: 'Step 3' },
+  { title: 'Step 4' },
+]
+</script>
+
+<template>
+  <ASteps type="dot" :current="current" :items="items" />
+</template>
+```
+
+</CodeGroup>
+
+<Tip>
+  Use `type="navigation"` to let users jump between steps non-linearly. Combine with `v-model:current` to render the appropriate step content below the steps bar.
+</Tip>

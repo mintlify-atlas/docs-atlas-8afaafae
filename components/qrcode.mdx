@@ -1,0 +1,84 @@
+---
+title: "QRCode — generate QR codes"
+description: "antdv-next QRCode renders a QR code SVG or canvas from any string value, with error correction levels, custom size, color, logo overlay, and expiry status."
+---
+
+`QRCode` generates a QR code directly in the browser from any string — a URL, text, or identifier. It supports SVG and canvas rendering types, error correction levels, custom colors, and an optional centered logo image.
+
+## Basic usage
+
+```vue
+<a-q-r-code value="https://antdv-next.github.io" />
+```
+
+## Custom size and color
+
+```vue
+<a-q-r-code
+  value="https://example.com"
+  :size="200"
+  color="#249bf9"
+  bg-color="#ffffff"
+/>
+```
+
+## With logo
+
+```vue
+<a-q-r-code
+  value="https://example.com"
+  :size="200"
+  :image-settings="{
+    src: 'https://example.com/logo.svg',
+    width: 40,
+    height: 40,
+    excavate: true,
+  }"
+/>
+```
+
+## Expired state
+
+```vue
+<a-q-r-code value="https://example.com" status="expired" @refresh="regenerate" />
+```
+
+## Props
+
+<ParamField path="value" type="string" required>
+  The string to encode into the QR code.
+</ParamField>
+
+<ParamField path="size" type="number">
+  Width and height of the QR code in pixels. Defaults to `160`.
+</ParamField>
+
+<ParamField path="type" type="'svg' | 'canvas'">
+  Render type. Defaults to `'svg'`.
+</ParamField>
+
+<ParamField path="color" type="string">
+  QR code foreground color. Defaults to `'#000000'`.
+</ParamField>
+
+<ParamField path="bgColor" type="string">
+  QR code background color. Defaults to `'#ffffff'`.
+</ParamField>
+
+<ParamField path="errorLevel" type="'L' | 'M' | 'Q' | 'H'">
+  Error correction level. Higher values allow more damage tolerance. Defaults to `'M'`.
+</ParamField>
+
+<ParamField path="status" type="'active' | 'expired' | 'loading' | 'scanned'">
+  Displays an overlay on the QR code for status feedback.
+</ParamField>
+
+<ParamField path="bordered" type="boolean">
+  Shows a border around the QR code. Defaults to `true`.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `refresh` | — | Fires when the user clicks refresh on an `expired` QR code |

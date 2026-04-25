@@ -1,0 +1,68 @@
+---
+title: "Alert — inline feedback messages"
+description: "antdv-next Alert displays success, info, warning, or error messages inline on the page. Supports closable banners, description text, and custom icons."
+---
+
+`Alert` renders a colored banner for inline feedback — confirmations, warnings, validation errors, or informational notices. Unlike `message` or `notification`, it is placed inline in the page layout, not overlaid.
+
+## Basic alert
+
+```vue
+<a-alert type="success" message="Action completed successfully!" />
+<a-alert type="info" message="This is an informational note." />
+<a-alert type="warning" message="Proceed with caution." />
+<a-alert type="error" message="Something went wrong." />
+```
+
+## With description
+
+```vue
+<a-alert
+  type="warning"
+  message="Deprecated API"
+  description="This endpoint will be removed in v2. Please migrate to the new API by March 2025."
+  show-icon
+  closable
+/>
+```
+
+## Props
+
+<ParamField path="type" type="'success' | 'info' | 'warning' | 'error'">
+  Alert severity and color. Defaults to `'info'`.
+</ParamField>
+
+<ParamField path="message" type="string | VueNode">
+  Primary alert text. Also available as the `message` slot.
+</ParamField>
+
+<ParamField path="description" type="string | VueNode">
+  Secondary detail text shown below the message.
+</ParamField>
+
+<ParamField path="showIcon" type="boolean">
+  Shows the type-appropriate icon. Automatically `true` when `description` is set.
+</ParamField>
+
+<ParamField path="closable" type="boolean">
+  Shows a close button to dismiss the alert.
+</ParamField>
+
+<ParamField path="closeText" type="string | VueNode">
+  Custom close button text instead of the × icon.
+</ParamField>
+
+<ParamField path="banner" type="boolean">
+  Renders the alert as a top-of-page banner without rounded corners.
+</ParamField>
+
+<ParamField path="icon" type="VueNode">
+  Custom icon to replace the default type icon.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `close` | `MouseEvent` | Fires when the alert is closed |
+| `afterClose` | — | Fires after the close animation finishes |

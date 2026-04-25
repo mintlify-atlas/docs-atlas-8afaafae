@@ -1,0 +1,201 @@
+---
+title: "Migrate to antdv-next from ant-design-vue"
+description: "Step-by-step guide for migrating your project from ant-design-vue v3/v4 to antdv-next, covering prop renames, event changes, and removed APIs."
+---
+
+antdv-next is a Vue 3 component library that targets API parity with Ant Design React v5. It is a ground-up reimplementation — not a fork — built on Vue 3 Composition API, TSX, and a ported CSS-in-JS runtime (`@antdv-next/cssinjs`). This means the migration from `ant-design-vue` is not a drop-in replacement: prop names differ, the event system is stricter, and the styling architecture has changed. This guide walks you through the most common changes.
+
+<Warning>
+  antdv-next is a breaking redesign of the ant-design-vue API surface. Before starting the migration, audit your codebase for usages of `on*` props, `rootClassName`, `classNames`, and component-specific deprecated props. Plan for a non-trivial amount of find-and-replace work on larger projects.
+</Warning>
+
+## Key differences from ant-design-vue
+
+### Prop renames
+
+Several universal props have been renamed to align with Vue conventions and Ant Design React v5:
+
+| ant-design-vue prop | antdv-next equivalent | Notes |
+| --- | --- | --- |
+| `rootClassName` | `rootClass` | Applies a class to the component root element |
+| `classNames` | `classes` | Object of semantic class names for sub-elements |
+| `className` | `attrs.class` (not a prop) | Pass via template `class` attribute — falls through attrs |
+| `style` | `attrs.style` (not a prop) | Pass via template `:style` — falls through attrs |
+
+### Events: on\* props removed
+
+`ant-design-vue` accepted event handlers as `on*` props (e.g., `:onChange="handler"`). antdv-next removes all `on*` props. Events are declared in the component's `emits` contract and consumed via Vue's `v-on` / `@` syntax.
+
+<CodeGroup>
+
+```vue before (ant-design-vue)
+<template>
+  <a-select
+    :onChange="handleChange"
+    :onDropdownVisibleChange="handleOpen"
+  />
+</template>
+```
+
+```vue after (antdv-next)
+<template>
+  <a-select
+    @change="handleChange"
+    @open-change="handleOpen"
+  />
+</template>
+```
+
+</CodeGroup>
+
+### children prop replaced by slots
+
+React's `children` prop does not exist in Vue. Any component that accepted a `children` prop in ant-design-vue's React-compat layer now uses Vue slots exclusively.
+
+```vue
+<!-- Before: children-style object prop -->
+<!-- After: use the default slot -->
+<a-menu :items="menuItems">
+  <!-- sub-content via slots, not children prop -->
+</a-menu>
+```
+
+### Fragment cleanup
+
+antdv-next uses `filterEmpty` from `@v-c/util/dist/props-util` internally to strip empty vnodes and fragment wrappers from slot content. If you wrote custom render functions that produce fragments or empty nodes, they will be cleaned automatically. You do not need to handle this manually in templates.
+
+## Installation change
+
+Remove `ant-design-vue` and install `antdv-next`. Also replace `@ant-design/icons-vue` with `@antdv-next/icons` — the original icons package is not compatible with antdv-next's theming system.
+
+<Steps>
+  <Step title="Remove old packages">
+    ```bash
+    pnpm remove ant-design-vue @ant-design/icons-vue
+    ```
+  </Step>
+
+  <Step title="Install antdv-next and the new icons package">
+    ```bash
+    pnpm add antdv-next @antdv-next/icons
+    ```
+  </Step>
+
+  <Step title="Upgrade Vue to 3.5.x (recommended)">
+    ```bash
+    pnpm add vue@^3.5.0
+    ```
+  </Step>
+</Steps>
+
+## Import changes
+
+<CodeGroup>
+
+```ts before
+import { Button, Input, DatePicker } from 'ant-design-vue'
+import { SearchOutlined } from '@ant-design/icons-vue'
+import 'ant-design-vue/dist/reset.css'
+```
+
+```ts after
+import { Button, Input, DatePicker } from 'antdv-next'
+import { SearchOutlined } from '@antdv-next/icons'
+import 'antdv-next/dist/reset.css'
+```
+
+</CodeGroup>
+
+## Component prefix
+
+antdv-next registers global components with the prefix `A` (PascalCase) or `a-` (kebab-case). This matches the convention in ant-design-vue, so template markup should need minimal changes for the prefix itself.
+
+```vue
+<!-- Both of these work in antdv-next -->
+<AButton type="primary">Click me</AButton>
+<a-button type="primary">Click me</a-button>
+```
+
+## Theme migration
+
+`ant-design-vue` v4 used Ant Design v5 CSS variables. antdv-next uses the same design token system via `@antdv-next/cssinjs`, its ported CSS-in-JS runtime. The token names and the `ConfigProvider` theme API are compatible.
+
+```vue
+<script lang="ts" setup>
+const theme = {
+  token: {
+    colorPrimary: '#1677ff',
+    borderRadius: 6,
+  },
+}
+</script>
+
+<template>
+  <a-config-provider :theme="theme">
+    <App />
+  </a-config-provider>
+</template>
+```
+
+If you previously relied on global CSS variable overrides, switch to the `theme.token` approach above. Hardcoded CSS variable names may have changed between library versions.
+
+## Deprecated API reference
+
+The following component-level APIs are deprecated in antdv-next (they still work but will emit console warnings until removed in v2.0). Migrate to the replacement as soon as possible.
+
+<AccordionGroup>
+  <Accordion title="Form, Input, Select">
+    - `Input` / `InputNumber`: `addonAfter`, `addonBefore` → use `Space.Compact`
+    - `Input.Group` → `Space.Compact`
+    - `Select`: `dropdownStyle` → `styles.popup.root`, `dropdownClassName` → `classes.popup.root`, `dropdownRender` → `popupRender`, `onDropdownVisibleChange` → `@open-change`, `bordered` → `variant`
+    - `AutoComplete`: same dropdown-related renames as Select
+  </Accordion>
+
+  <Accordion title="Overlay components (Modal, Drawer, Tooltip)">
+    - `Modal`: `bodyStyle` → `styles.body`, `maskStyle` → `styles.mask`, `destroyOnClose` → `destroyOnHidden`
+    - `Drawer`: `headerStyle` → `styles.header`, `bodyStyle` → `styles.body`, `footerStyle` → `styles.footer`, `contentWrapperStyle` → `styles.wrapper`, `drawerStyle` → `styles.section`, `maskStyle` → `styles.mask`, `destroyOnClose` → `destroyOnHidden`, `width`/`height` → `size`
+    - `Tooltip`: `overlayStyle` → `styles.root`, `overlayInnerStyle` → `styles.container`, `overlayClassName` → `classes.root`, `destroyTooltipOnHide` → `destroyOnHidden`
+    - `Dropdown`: `overlayClassName` → `classes.root`, `overlayStyle` → `styles.root`, `dropdownRender` → `popupRender`, `destroyPopupOnHide` → `destroyOnHidden`
+  </Accordion>
+
+  <Accordion title="Data display (Table, Tabs, Tree)">
+    - `Table`: `customRender` → `render`, `customRow` → `onRow`, `customCell` → `onCell`, `filterDropdownOpen` → `filterDropdownProps.open`, `pagination.position` → `pagination.placement`
+    - `Tabs`: `tabPosition` → `tabPlacement`, `popupClassName` → `classes.popup`, `destroyInactiveTabPane` → `destroyOnHidden`
+    - `Tree`: `treeData.title(v-slot)` → `titleRender`
+    - `TreeSelect`: same dropdown-related renames as Select
+  </Accordion>
+
+  <Accordion title="Layout and navigation">
+    - `Steps`: `labelPlacement` → `titlePlacement`, `direction` → `orientation`, `progressDot` → `type="dot"`, `items.description` → `items.content`
+    - `Breadcrumb`: `routes` → `items`, `Breadcrumb.Item` / `Breadcrumb.Separator` → `items`
+    - `Menu`: `value` → `key`, `children` → `items`
+    - `Space`: `direction` → `orientation`, `split` → `separator`
+    - `Splitter`: `layout` → `orientation`
+  </Accordion>
+
+  <Accordion title="Feedback and status">
+    - `Alert`: `closeText` → `closable.closeIcon`, `message` → `title`
+    - `Notification` / `notification`: `message` → `title`, `btn` → `actions`, `close` → `destroy`
+    - `Spin`: `tip` → `description`, `wrapperClassName` → `classes.root`
+    - `Progress`: `strokeWidth` / `width` → `size`, `trailColor` → `railColor`, `gapPosition` → `gapPlacement`
+    - `Tag`: `bordered={false}` → `variant="filled"`, `color="xxx-inverse"` → `variant="solid"`
+  </Accordion>
+</AccordionGroup>
+
+## Upgrade checklist
+
+Work through the following checklist before deploying your migrated application:
+
+- **Vue version**: upgrade to `vue@3.5.x`
+- **Icons**: confirm `@ant-design/icons-vue` is replaced by `@antdv-next/icons` everywhere
+- **Event handlers**: search for `:on` prop patterns and convert to `@event` syntax
+- **rootClassName**: replace with `rootClass`
+- **classNames**: replace with `classes`
+- **Browser targets**: confirm users' browsers support CSS variables (all modern browsers do)
+- **Custom styles**: if you targeted internal component DOM nodes with CSS selectors, verify they still apply after the DOM structure updates in antdv-next
+- **Overlay mask blur**: if you do not want the new default blur effect on Modal/Drawer masks, disable it via `ConfigProvider`
+- **Console warnings**: run the app and resolve all deprecation warnings before shipping
+
+<Note>
+  Consult the [GitHub changelog](https://github.com/antdv-next/antdv-next/releases) for version-specific breaking changes not covered in this guide. The changelog documents every deprecated prop removal and DOM structure change release-by-release.
+</Note>

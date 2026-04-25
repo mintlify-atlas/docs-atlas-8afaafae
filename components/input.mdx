@@ -1,0 +1,130 @@
+---
+title: "Input, TextArea, Search, Password, OTP"
+description: "antdv-next Input covers single-line, TextArea, search, password, and OTP fields. All variants share v-model:value, prefix/suffix slots, addons, and allowClear."
+---
+
+The `Input` family in antdv-next provides components for every text-entry scenario: `Input` for single-line text, `TextArea` for multiline, `InputSearch` with a search trigger, `InputPassword` with visibility toggle, and `InputOTP` for one-time codes. All variants follow the same v-model pattern and size system.
+
+## Basic Input
+
+```vue App.vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const value = ref('')
+</script>
+
+<template>
+  <a-input v-model:value="value" placeholder="Enter text..." />
+</template>
+```
+
+## Input Props
+
+<ParamField path="value" type="string">
+  Bound value via `v-model:value`.
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder text shown when empty.
+</ParamField>
+
+<ParamField path="size" type="'large' | 'middle' | 'small'">
+  Input height. Defaults to `'middle'`.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the input.
+</ParamField>
+
+<ParamField path="allowClear" type="boolean">
+  Shows a clear icon when the input has a value.
+</ParamField>
+
+<ParamField path="prefix" type="VueNode">
+  Content rendered inside the input on the left. Use the `prefix` slot for Vue nodes.
+</ParamField>
+
+<ParamField path="suffix" type="VueNode">
+  Content rendered inside the input on the right.
+</ParamField>
+
+<ParamField path="addonBefore" type="VueNode">
+  Content attached outside the input on the left.
+</ParamField>
+
+<ParamField path="addonAfter" type="VueNode">
+  Content attached outside the input on the right.
+</ParamField>
+
+<ParamField path="maxlength" type="number">
+  Maximum character length.
+</ParamField>
+
+<ParamField path="showCount" type="boolean">
+  Displays character count. Use with `maxlength` for a limit indicator.
+</ParamField>
+
+## TextArea
+
+```vue
+<a-textarea v-model:value="value" :rows="4" show-count :maxlength="200" />
+```
+
+Additional TextArea props:
+
+<ParamField path="autoSize" type="boolean | { minRows: number, maxRows: number }">
+  Auto-grow the textarea height to fit content.
+</ParamField>
+
+## InputSearch
+
+```vue
+<a-input-search v-model:value="keyword" placeholder="Search..." enter-button @search="onSearch" />
+```
+
+<ParamField path="enterButton" type="boolean | VueNode">
+  Shows a search button. Pass a string or node for custom button content.
+</ParamField>
+
+<ParamField path="loading" type="boolean">
+  Shows loading state on the search button.
+</ParamField>
+
+## InputPassword
+
+```vue
+<a-input-password v-model:value="password" placeholder="Password" />
+```
+
+The password input renders a toggle icon to show/hide the value. The `visibilityToggle` prop (boolean or `{ visible, onVisibleChange }`) controls this behavior.
+
+## InputOTP
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const otp = ref('')
+</script>
+
+<template>
+  <a-input-o-t-p v-model:value="otp" :length="6" />
+</template>
+```
+
+<ParamField path="length" type="number">
+  Number of OTP input cells. Defaults to `6`.
+</ParamField>
+
+<ParamField path="mask" type="boolean | string">
+  Mask each cell's value. Pass `true` for dots or a custom character.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `Event` | Fires on every keystroke |
+| `pressEnter` | `KeyboardEvent` | Fires on Enter key |
+| `focus` | `FocusEvent` | Fires when input gains focus |
+| `blur` | `FocusEvent` | Fires when input loses focus |
+| `search` | `(value, event)` | InputSearch only — fires on Enter or button click |

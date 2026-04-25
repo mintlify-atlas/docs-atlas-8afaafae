@@ -1,0 +1,56 @@
+---
+title: "Result — outcome feedback page"
+description: "antdv-next Result displays a full-page outcome illustration with a title, subtitle, and action buttons for success, failure, 404, 403, and 500 states."
+---
+
+`Result` renders a centered outcome screen — typically used after form submissions, payment flows, or as error pages. It includes a large status illustration, title, subtitle, and a slot for action buttons.
+
+## Success result
+
+```vue
+<a-result
+  status="success"
+  title="Payment Successful"
+  sub-title="Your order #ORD-1024 has been placed. You will receive a confirmation email shortly."
+>
+  <template #extra>
+    <a-button type="primary">View Order</a-button>
+    <a-button>Back to Home</a-button>
+  </template>
+</a-result>
+```
+
+## Error and HTTP status pages
+
+```vue
+<a-result status="404" title="404" sub-title="The page you are looking for does not exist.">
+  <template #extra>
+    <a-button type="primary" href="/">Back Home</a-button>
+  </template>
+</a-result>
+
+<a-result status="500" title="Server Error" sub-title="Something went wrong on our end." />
+<a-result status="403" title="Access Denied" sub-title="You do not have permission to view this page." />
+```
+
+## Props
+
+<ParamField path="status" type="'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'">
+  Determines the illustration and default icon shown.
+</ParamField>
+
+<ParamField path="title" type="string | VueNode">
+  Primary heading text.
+</ParamField>
+
+<ParamField path="subTitle" type="string | VueNode">
+  Supporting description below the title.
+</ParamField>
+
+<ParamField path="icon" type="VueNode">
+  Custom icon or illustration replacing the default status image.
+</ParamField>
+
+<ParamField path="extra" type="VueNode">
+  Action buttons or links rendered below the subtitle. Use the `extra` slot.
+</ParamField>

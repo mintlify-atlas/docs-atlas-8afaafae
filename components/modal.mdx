@@ -1,0 +1,99 @@
+---
+title: "Modal — dialog overlay"
+description: "antdv-next Modal renders a dialog with title, body, and footer buttons. Use useModal() for programmatic dialogs that inherit ConfigProvider theme and locale."
+---
+
+`Modal` is a dialog overlay that interrupts the user to display information or collect input. Bind visibility with `v-model:open`. For imperative usage (e.g. confirmation dialogs triggered from code), use the `useModal()` composable so the modal inherits your `ConfigProvider` theme.
+
+## Declarative modal
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const open = ref(false)
+</script>
+
+<template>
+  <a-button @click="open = true">Open Modal</a-button>
+  <a-modal v-model:open="open" title="Confirm Action" @ok="open = false">
+    <p>Are you sure you want to proceed?</p>
+  </a-modal>
+</template>
+```
+
+## Imperative with useModal
+
+```vue
+<script setup lang="ts">
+import { useModal } from 'antdv-next'
+const [modal, contextHolder] = useModal()
+
+function showConfirm() {
+  modal.confirm({
+    title: 'Delete item?',
+    content: 'This action cannot be undone.',
+    onOk() { console.log('Confirmed') },
+  })
+}
+</script>
+
+<template>
+  <component :is="contextHolder" />
+  <a-button danger @click="showConfirm">Delete</a-button>
+</template>
+```
+
+## Props
+
+<ParamField path="open" type="boolean">
+  Controls visibility via `v-model:open`.
+</ParamField>
+
+<ParamField path="title" type="string | VueNode">
+  Modal header title.
+</ParamField>
+
+<ParamField path="width" type="number | string">
+  Modal width. Defaults to `520`.
+</ParamField>
+
+<ParamField path="okText" type="string">
+  Text for the confirm button. Defaults to `'OK'`.
+</ParamField>
+
+<ParamField path="cancelText" type="string">
+  Text for the cancel button. Defaults to `'Cancel'`.
+</ParamField>
+
+<ParamField path="okType" type="ButtonType">
+  Button type for the OK button. Defaults to `'primary'`.
+</ParamField>
+
+<ParamField path="confirmLoading" type="boolean">
+  Shows loading state on the OK button.
+</ParamField>
+
+<ParamField path="destroyOnClose" type="boolean">
+  Unmounts child components when the modal closes. Defaults to `false`.
+</ParamField>
+
+<ParamField path="maskClosable" type="boolean">
+  Closes the modal when clicking the backdrop. Defaults to `true`.
+</ParamField>
+
+<ParamField path="centered" type="boolean">
+  Vertically centers the modal.
+</ParamField>
+
+<ParamField path="footer" type="VueNode | null">
+  Custom footer content. Pass `null` to hide the footer entirely.
+</ParamField>
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `ok` | `MouseEvent` | Fires when the OK button is clicked |
+| `cancel` | `MouseEvent` | Fires when Cancel or the X button is clicked |
+| `afterOpen` | — | Fires after the open animation completes |
+| `afterClose` | — | Fires after the close animation completes |

@@ -1,0 +1,76 @@
+---
+title: "Progress — completion indicator"
+description: "antdv-next Progress shows task completion as a line, circle, or dashboard gauge with percentage, status, custom colors, and step segments."
+---
+
+`Progress` visually communicates the completion of a task. Choose from `line` (horizontal bar), `circle` (ring), or `dashboard` (half-ring gauge) types. Use `steps` for segmented progress, and set `status` to `'exception'` or `'success'` to reflect the outcome.
+
+## Line progress
+
+```vue
+<a-progress :percent="60" />
+<a-progress :percent="100" status="success" />
+<a-progress :percent="70" status="exception" />
+<a-progress :percent="50" :show-info="false" />
+```
+
+## Circle progress
+
+```vue
+<a-progress type="circle" :percent="75" />
+<a-progress type="circle" :percent="100" />
+```
+
+## Dashboard gauge
+
+```vue
+<a-progress type="dashboard" :percent="65" />
+```
+
+## Segmented steps
+
+```vue
+<a-progress :percent="60" :steps="5" />
+```
+
+## Props
+
+<ParamField path="percent" type="number">
+  Completion percentage from `0` to `100`.
+</ParamField>
+
+<ParamField path="type" type="'line' | 'circle' | 'dashboard'">
+  Progress shape. Defaults to `'line'`.
+</ParamField>
+
+<ParamField path="status" type="'normal' | 'success' | 'exception' | 'active'">
+  Current status. `'active'` animates the bar. Defaults to `'normal'`.
+</ParamField>
+
+<ParamField path="showInfo" type="boolean">
+  Shows the percentage or status icon. Defaults to `true`.
+</ParamField>
+
+<ParamField path="strokeColor" type="string | { from, to } | string[]">
+  Bar color. Pass a gradient object or an array of colors for `steps`.
+</ParamField>
+
+<ParamField path="trailColor" type="string">
+  Background track color.
+</ParamField>
+
+<ParamField path="strokeWidth" type="number">
+  Bar thickness in pixels (line) or percentage (circle).
+</ParamField>
+
+<ParamField path="steps" type="number">
+  Splits the bar into a given number of discrete segments.
+</ParamField>
+
+<ParamField path="size" type="number | 'small' | 'default'">
+  Preset size. For `circle`/`dashboard`, sets the outer diameter.
+</ParamField>
+
+<ParamField path="format" type="(percent: number) => string | VueNode">
+  Custom text inside a circle or after a line progress.
+</ParamField>

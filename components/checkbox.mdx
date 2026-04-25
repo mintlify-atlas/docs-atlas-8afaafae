@@ -1,0 +1,92 @@
+---
+title: "Checkbox and CheckboxGroup"
+description: "antdv-next Checkbox supports indeterminate state for select-all patterns. CheckboxGroup binds an array of values to a list of options."
+---
+
+`Checkbox` is used for boolean selection or as part of a group where multiple values can be selected. `CheckboxGroup` simplifies binding a list of options to a single array value, while individual `Checkbox` components work independently with `v-model:checked`.
+
+## Basic usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const checked = ref(false)
+</script>
+
+<template>
+  <a-checkbox v-model:checked="checked">Accept terms</a-checkbox>
+</template>
+```
+
+## CheckboxGroup
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const selected = ref<string[]>(['apple'])
+const options = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Banana', value: 'banana' },
+  { label: 'Cherry', value: 'cherry', disabled: true },
+]
+</script>
+
+<template>
+  <a-checkbox-group v-model:value="selected" :options="options" />
+</template>
+```
+
+## Indeterminate (select all)
+
+```vue
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+const all = ['apple', 'banana', 'cherry']
+const selected = ref<string[]>([])
+const checkAll = computed(() => selected.value.length === all.length)
+const indeterminate = computed(() => selected.value.length > 0 && !checkAll.value)
+
+function onCheckAllChange(e: any) {
+  selected.value = e.target.checked ? [...all] : []
+}
+</script>
+
+<template>
+  <a-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange">
+    Select all
+  </a-checkbox>
+  <a-checkbox-group v-model:value="selected" :options="all.map(v => ({ label: v, value: v }))" />
+</template>
+```
+
+## Checkbox Props
+
+<ParamField path="checked" type="boolean">
+  Bound checked state via `v-model:checked`.
+</ParamField>
+
+<ParamField path="value" type="any">
+  The value this checkbox represents in a `CheckboxGroup`.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the checkbox.
+</ParamField>
+
+<ParamField path="indeterminate" type="boolean">
+  Renders a dash (–) state, used for select-all patterns.
+</ParamField>
+
+## CheckboxGroup Props
+
+<ParamField path="value" type="any[]">
+  Bound array of selected values via `v-model:value`.
+</ParamField>
+
+<ParamField path="options" type="string[] | { label, value, disabled? }[]">
+  List of options to render. Can be simple strings or option objects.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables all checkboxes in the group.
+</ParamField>

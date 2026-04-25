@@ -1,0 +1,78 @@
+---
+title: "Switch — toggle on/off control"
+description: "antdv-next Switch is a binary toggle with on/off slot labels, small size variant, loading indicator, and custom checkedValue/unCheckedValue value bindings."
+---
+
+`Switch` represents a binary state — on or off — and is typically used for settings toggles. Bind the current state with `v-model:checked`. Provide `checkedChildren` and `unCheckedChildren` slots to label each state, and use `loading` when the toggle triggers an async action.
+
+## Basic usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+const enabled = ref(false)
+</script>
+
+<template>
+  <a-switch v-model:checked="enabled" />
+</template>
+```
+
+## With labels
+
+```vue
+<a-switch v-model:checked="enabled">
+  <template #checkedChildren>On</template>
+  <template #unCheckedChildren>Off</template>
+</a-switch>
+```
+
+## Loading state
+
+```vue
+<a-switch v-model:checked="enabled" :loading="saving" @change="saveAsync" />
+```
+
+## Props
+
+<ParamField path="checked" type="boolean">
+  Bound toggle state via `v-model:checked`.
+</ParamField>
+
+<ParamField path="defaultChecked" type="boolean">
+  Initial state when uncontrolled.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the switch.
+</ParamField>
+
+<ParamField path="loading" type="boolean">
+  Shows a loading spinner instead of the toggle icon.
+</ParamField>
+
+<ParamField path="size" type="'default' | 'small'">
+  Switch size. Small is useful in dense UI.
+</ParamField>
+
+<ParamField path="checkedValue" type="boolean | string | number">
+  The value emitted when the switch is on. Defaults to `true`.
+</ParamField>
+
+<ParamField path="unCheckedValue" type="boolean | string | number">
+  The value emitted when the switch is off. Defaults to `false`.
+</ParamField>
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `checkedChildren` | Content shown when the switch is on |
+| `unCheckedChildren` | Content shown when the switch is off |
+
+## Emits
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `change` | `(checked: boolean, event)` | Fires when the toggle state changes |
+| `click` | `(checked: boolean, event)` | Fires on click |

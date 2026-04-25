@@ -1,0 +1,155 @@
+---
+title: "Space — uniform gaps between components"
+description: "The antdv-next Space component adds consistent horizontal or vertical spacing between child elements without CSS. SpaceCompact merges adjacent components."
+---
+
+`Space` wraps a list of child elements and inserts uniform gaps between them using CSS `column-gap` and `row-gap`. It removes the need for margin utilities on individual components and keeps spacing values tied to the design token system. Three related components extend this primitive: `SpaceCompact` visually merges adjacent form controls by removing the border between them, and `SpaceAddon` provides a styled prefix or suffix cell for inputs built inside a compact group.
+
+## Space props
+
+<ParamField path="size" type="'small' | 'middle' | 'large' | number | [SpaceSize, SpaceSize]" default="'small'">
+  Gap size between items. A preset string maps to the design token. A number is interpreted as pixels. A tuple `[horizontal, vertical]` sets the two axes independently.
+</ParamField>
+
+<ParamField path="direction" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Deprecated — use `orientation` instead. Controls the flex direction of the space container.
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'">
+  Layout direction of child items. `'horizontal'` arranges items in a row; `'vertical'` stacks them.
+</ParamField>
+
+<ParamField path="vertical" type="boolean">
+  Shorthand for `orientation="vertical"`. Overrides `orientation` when set.
+</ParamField>
+
+<ParamField path="align" type="'start' | 'end' | 'center' | 'baseline'">
+  Cross-axis alignment of items. Defaults to `'center'` for horizontal space.
+</ParamField>
+
+<ParamField path="wrap" type="boolean" default="false">
+  Allow items to wrap onto multiple lines when the container is too narrow.
+</ParamField>
+
+<ParamField path="separator" type="VueNode">
+  A node rendered between each pair of items. Also available as the `#separator` slot.
+</ParamField>
+
+## Space slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Child elements to space. |
+| `separator` | Custom separator rendered between items. Takes priority over the `separator` prop. |
+
+## SpaceCompact props
+
+`SpaceCompact` collapses borders between adjacent child components (inputs, buttons, selects) to form a unified group.
+
+<ParamField path="size" type="'small' | 'middle' | 'large'">
+  Compact group size, propagated to all children via context.
+</ParamField>
+
+<ParamField path="direction" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Deprecated — use `orientation`.
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'">
+  Stacking direction of the compact group.
+</ParamField>
+
+<ParamField path="vertical" type="boolean">
+  Shorthand for `orientation="vertical"`.
+</ParamField>
+
+<ParamField path="block" type="boolean" default="false">
+  Make the compact group fill the full width of its container.
+</ParamField>
+
+## SpaceAddon props
+
+`SpaceAddon` renders a styled box intended for use as a prefix or suffix within a `SpaceCompact` group. It participates in the compact border-collapse logic.
+
+<ParamField path="variant" type="'outlined' | 'filled' | 'borderless'" default="'outlined'">
+  Visual style of the addon cell.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Apply the disabled appearance.
+</ParamField>
+
+<ParamField path="status" type="'error' | 'warning'">
+  Validation status, applies the corresponding color to the addon border.
+</ParamField>
+
+## Examples
+
+### Basic horizontal spacing
+
+```vue basic-space.vue
+<template>
+  <a-space>
+    <a-button>Button 1</a-button>
+    <a-button>Button 2</a-button>
+    <a-button>Button 3</a-button>
+  </a-space>
+</template>
+```
+
+### Vertical spacing
+
+```vue vertical-space.vue
+<template>
+  <a-space orientation="vertical" style="width: 100%">
+    <a-card title="Card 1">Content</a-card>
+    <a-card title="Card 2">Content</a-card>
+    <a-card title="Card 3">Content</a-card>
+  </a-space>
+</template>
+```
+
+### Custom size and wrapping
+
+```vue wrap-space.vue
+<template>
+  <a-space :size="[8, 16]" wrap>
+    <a-tag v-for="i in 20" :key="i">Tag {{ i }}</a-tag>
+  </a-space>
+</template>
+```
+
+### Separator
+
+```vue separator-space.vue
+<template>
+  <a-space>
+    <a>Link one</a>
+    <a>Link two</a>
+    <a>Link three</a>
+
+    <template #separator>
+      <a-divider type="vertical" />
+    </template>
+  </a-space>
+</template>
+```
+
+### Compact input group
+
+```vue compact-group.vue
+<template>
+  <a-space-compact>
+    <a-space-addon>https://</a-space-addon>
+    <a-input default-value="example.com" style="width: 200px" />
+    <a-button type="primary">Go</a-button>
+  </a-space-compact>
+</template>
+```
+
+<Note>
+  `SpaceCompact` works by injecting context into each direct child that tells it whether it is the first or last item in the group. Components that support compact mode (inputs, selects, buttons) read this context to apply the appropriate border-radius overrides.
+</Note>
+
+<Tip>
+  Wrap content inside `NoCompactStyle` (exported from the same module) to opt specific children out of compact border merging while keeping them inside the group.
+</Tip>
